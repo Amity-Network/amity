@@ -8,25 +8,8 @@ linux64:
   script:
   - git submodule init && git submodule update
   - make release-static
-
-  
-linux64-deploy:
-  image: amityproject/linux64:builder
-  stage: deploy
-  script:
-  - git submodule init && git submodule update
-  - make release-static
-  - mv ./build/release/bin/* ./
-  artifacts:
-    paths:
-    - ./amity-blockchain-import
-    - ./amity-blockchain-export
-    - ./amity-wallet-cli
-    - ./amity-wallet-rpc
-    - ./amityd
-  only:
+  except:
     - master
-
 
   
 linux64-deploy:
@@ -56,6 +39,8 @@ win64:
   - make download-win
   - cd ../..
   - make depends target=x86_64-w64-mingw32
+  except:
+    - master
 
   
 win64-deploy:
@@ -88,6 +73,8 @@ macos64:
   - make download-osx
   - cd ../..
   - make depends target=x86_64-apple-darwin11
+  except:
+    - master
 
 
 macos64-deploy:
@@ -120,6 +107,8 @@ arm64:
   - make download-osx
   - cd ../..
   - make depends target=aarch64-linux-gnu
+  except:
+    - master
 
 
 arm64-deploy:
@@ -151,6 +140,8 @@ armhf:
   - make download-linux
   - cd ../..
   - make depends target=arm-linux-gnueabihf
+  except:
+    - master
 
 
 armhf-deploy:
@@ -182,6 +173,8 @@ riscv64:
   - make download-linux
   - cd ../..
   - make depends target=riscv64-linux-gnu
+  except:
+    - master
 
 
 riscv64-deploy:
