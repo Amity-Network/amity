@@ -1,5 +1,6 @@
 stages:
   - buildrelease
+  - deploy
 
 linux64:
   image: amityproject/linux64:builder
@@ -17,9 +18,39 @@ linux64:
     - ./amityd
     
 
+  
+linux64-deploy:
+  image: amityproject/linux64:builder
+  stage: deploy
+  script:
+  - git submodule init && git submodule update
+  - make release-static
+  - mv ./build/release/bin/* ./
+  artifacts:
+    paths:
+    - ./amity-blockchain-import
+    - ./amity-blockchain-export
+    - ./amity-wallet-cli
+    - ./amity-wallet-rpc
+    - ./amityd
+  only:
+    - master
+
+
 win64:
   image: amityproject/win64:builder
   stage: buildrelease
+  script:
+  - git submodule init && git submodule update
+  - cd contrib/depends/
+  - make download-win
+  - cd ../..
+  - make depends target=x86_64-w64-mingw32
+
+  
+win64-deploy:
+  image: amityproject/win64:builder
+  stage: deploy
   script:
   - git submodule init && git submodule update
   - cd contrib/depends/
@@ -34,11 +65,24 @@ win64:
     - ./amity-wallet-cli.exe
     - ./amity-wallet-rpc.exe
     - ./amityd.exe
+  only:
+    - master
 
 
 macos64:
   image: amityproject/macos:builder
   stage: buildrelease
+  script:
+  - git submodule init && git submodule update
+  - cd contrib/depends/
+  - make download-osx
+  - cd ../..
+  - make depends target=x86_64-apple-darwin11
+
+
+macos64-deploy:
+  image: amityproject/macos:builder
+  stage: deploy
   script:
   - git submodule init && git submodule update
   - cd contrib/depends/
@@ -53,6 +97,8 @@ macos64:
     - ./amity-wallet-cli
     - ./amity-wallet-rpc
     - ./amityd
+  only:
+    - master
 
 
 arm64:
@@ -61,21 +107,45 @@ arm64:
   script:
   - git submodule init && git submodule update
   - cd contrib/depends/
-  - make download-linux
+  - make download-osx
   - cd ../..
   - make depends target=aarch64-linux-gnu
-  - mv ./build/aarch64-linux-gnu/release/bin/* ./
+
+
+arm64-deploy:
+  image: amityproject/aarch64:builder
+  stage: deploy
+  script:
+  - git submodule init && git submodule update
+  - cd contrib/depends/
+  - make download
+  - cd ../..
+  - make depends target=aarch64-linux-gnu
+  - mv ./build/aarch64-linux-gnu/release/bin/* ./  
   artifacts:
     paths:
     - ./amity-blockchain-import
     - ./amity-blockchain-export
     - ./amity-wallet-cli
     - ./amity-wallet-rpc
-    - ./amityd 
+    - ./amityd
+  only:
+    - master
 
 armhf:
   image: amityproject/armhf:builder
   stage: buildrelease
+  script:
+  - git submodule init && git submodule update
+  - cd contrib/depends/
+  - make download-linux
+  - cd ../..
+  - make depends target=arm-linux-gnueabihf
+
+
+armhf-deploy:
+  image: amityproject/armhf:builder
+  stage: deploy
   script:
   - git submodule init && git submodule update
   - cd contrib/depends/
@@ -90,10 +160,23 @@ armhf:
     - ./amity-wallet-cli
     - ./amity-wallet-rpc
     - ./amityd
+  only:
+    - master
 
 riscv64:
   image: amityproject/riscv64:builder
   stage: buildrelease
+  script:
+  - git submodule init && git submodule update
+  - cd contrib/depends/
+  - make download-linux
+  - cd ../..
+  - make depends target=riscv64-linux-gnu
+
+
+riscv64-deploy:
+  image: amityproject/riscv64:builder
+  stage: deploy
   script:
   - git submodule init && git submodule update
   - cd contrib/depends/
@@ -108,3 +191,6 @@ riscv64:
     - ./amity-wallet-cli
     - ./amity-wallet-rpc
     - ./amityd
+  only:
+    - master
+    
