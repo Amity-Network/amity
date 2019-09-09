@@ -29,11 +29,11 @@ win64:
   - mv ./build/x86_64-w64-mingw32/release/bin/* ./
   artifacts:
     paths:
-    - ./amity-blockchain-import
-    - ./amity-blockchain-export
-    - ./amity-wallet-cli
-    - ./amity-wallet-rpc
-    - ./amityd
+    - ./amity-blockchain-import.exe
+    - ./amity-blockchain-export.exe
+    - ./amity-wallet-cli.exe
+    - ./amity-wallet-rpc.exe
+    - ./amityd.exe
 
 
 macos64:
