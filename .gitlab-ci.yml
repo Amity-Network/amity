@@ -88,3 +88,4 @@ riscv64:
     - ./amity-wallet-cli
     - ./amity-wallet-rpc
     - ./amityd
+    
