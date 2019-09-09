@@ -8,6 +8,14 @@ linux64:
   script:
   - git submodule init && git submodule update
   - make release-static
+
+  
+linux64-deploy:
+  image: amityproject/linux64:builder
+  stage: deploy
+  script:
+  - git submodule init && git submodule update
+  - make release-static
   - mv ./build/release/bin/* ./
   artifacts:
     paths:
@@ -16,7 +24,9 @@ linux64:
     - ./amity-wallet-cli
     - ./amity-wallet-rpc
     - ./amityd
-    
+  only:
+    - master
+
 
   
 linux64-deploy:
