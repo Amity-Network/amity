@@ -20,6 +20,7 @@ linux64-deploy:
   - make release-static
   - mv ./build/release/bin/* ./
   artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_TAG-$CI_COMMIT_SHORT_SHA"
     paths:
     - ./amity-blockchain-import
     - ./amity-blockchain-export
@@ -54,6 +55,7 @@ win64-deploy:
   - make depends target=x86_64-w64-mingw32
   - mv ./build/x86_64-w64-mingw32/release/bin/* ./
   artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_TAG-$CI_COMMIT_SHORT_SHA"
     paths:
     - ./amity-blockchain-import.exe
     - ./amity-blockchain-export.exe
@@ -88,6 +90,7 @@ macos64-deploy:
   - make depends target=x86_64-apple-darwin11
   - mv ./build/x86_64-apple-darwin11/release/bin/* ./
   artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_TAG-$CI_COMMIT_SHORT_SHA"
     paths:
     - ./amity-blockchain-import
     - ./amity-blockchain-export
@@ -122,6 +125,7 @@ arm64-deploy:
   - make depends target=aarch64-linux-gnu
   - mv ./build/aarch64-linux-gnu/release/bin/* ./  
   artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_TAG-$CI_COMMIT_SHORT_SHA"
     paths:
     - ./amity-blockchain-import
     - ./amity-blockchain-export
@@ -155,6 +159,7 @@ armhf-deploy:
   - make depends target=arm-linux-gnueabihf
   - mv ./build/arm-linux-gnueabihf/release/bin/* ./ 
   artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_TAG-$CI_COMMIT_SHORT_SHA"
     paths:
     - ./amity-blockchain-import
     - ./amity-blockchain-export
@@ -188,6 +193,7 @@ riscv64-deploy:
   - make depends target=riscv64-linux-gnu
   - mv ./build/riscv64-linux-gnu/release/bin/* ./ 
   artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_TAG-$CI_COMMIT_SHORT_SHA"
     paths:
     - ./amity-blockchain-import
     - ./amity-blockchain-export
