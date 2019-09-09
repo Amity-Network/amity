@@ -8,7 +8,14 @@ linux64:
   - git submodule init && git submodule update
   - make release-static
   - mv ./build/release/bin/* ./
-
+  artifacts:
+    paths:
+    - ./amity-blockchain-import
+    - ./amity-blockchain-export
+    - ./amity-wallet-cli
+    - ./amity-wallet-rpc
+    - ./amityd
+    
 
 win64:
   image: amityproject/win64:builder
@@ -16,10 +23,17 @@ win64:
   script:
   - git submodule init && git submodule update
   - cd contrib/depends/
-  - make download
+  - make download-win
   - cd ../..
   - make depends target=x86_64-w64-mingw32
   - mv ./build/x86_64-w64-mingw32/release/bin/* ./
+  artifacts:
+    paths:
+    - ./amity-blockchain-import
+    - ./amity-blockchain-export
+    - ./amity-wallet-cli
+    - ./amity-wallet-rpc
+    - ./amityd
 
 
 macos64:
@@ -28,7 +42,7 @@ macos64:
   script:
   - git submodule init && git submodule update
   - cd contrib/depends/
-  - make download
+  - make download-osx
   - cd ../..
   - make depends target=x86_64-apple-darwin11
   - mv ./build/x86_64-apple-darwin11/release/bin/* ./
@@ -65,7 +79,7 @@ armhf:
   script:
   - git submodule init && git submodule update
   - cd contrib/depends/
-  - make download
+  - make download-linux
   - cd ../..
   - make depends target=arm-linux-gnueabihf
   - mv ./build/arm-linux-gnueabihf/release/bin/* ./ 
@@ -83,7 +97,7 @@ riscv64:
   script:
   - git submodule init && git submodule update
   - cd contrib/depends/
-  - make download
+  - make download-linux
   - cd ../..
   - make depends target=riscv64-linux-gnu
   - mv ./build/riscv64-linux-gnu/release/bin/* ./ 
