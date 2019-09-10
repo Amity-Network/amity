@@ -9,7 +9,6 @@ linux64:
   - git submodule init && git submodule update
   - make release-static
   except:
-    - master
     - tags
 
   
@@ -28,9 +27,7 @@ LINUX64:
     - ./amity-wallet-cli
     - ./amity-wallet-rpc
     - ./amityd
-    expire_in: 4 weeks
   only:
-    - master
     - tags
 
 
@@ -45,7 +42,6 @@ win64:
   - cd ../
   - make depends target=x86_64-w64-mingw32
   except:
-    - master
     - tags
 
   
@@ -67,10 +63,8 @@ WIN64:
     - ./amity-blockchain-export.exe
     - ./amity-wallet-cli.exe
     - ./amity-wallet-rpc.exe
-    - ./amityd.exe
-    expire_in: 4 weeks
+    - ./amityd.exe 
   only:
-    - master
     - tags
 
 
@@ -85,7 +79,6 @@ macos64:
   - cd ../
   - make depends target=x86_64-apple-darwin11
   except:
-    - master
     - tags
 
 
@@ -107,10 +100,8 @@ MACOS64:
     - ./amity-blockchain-export
     - ./amity-wallet-cli
     - ./amity-wallet-rpc
-    - ./amityd
-    expire_in: 4 weeks
+    - ./amityd   
   only:
-    - master
     - tags
 
 
@@ -125,7 +116,6 @@ arm64:
   - cd ../
   - make depends target=aarch64-linux-gnu
   except:
-    - master
     - tags
 
 
@@ -147,10 +137,8 @@ ARM64:
     - ./amity-blockchain-export
     - ./amity-wallet-cli
     - ./amity-wallet-rpc
-    - ./amityd
-    expire_in: 4 weeks
+    - ./amityd  
   only:
-    - master
     - tags
 
 armhf:
@@ -164,7 +152,6 @@ armhf:
   - cd ../
   - make depends target=arm-linux-gnueabihf
   except:
-    - master
     - tags
 
 
@@ -187,9 +174,7 @@ ARMHF:
     - ./amity-wallet-cli
     - ./amity-wallet-rpc
     - ./amityd
-    expire_in: 4 weeks
   only:
-    - master
     - tags
 
 
@@ -204,7 +189,6 @@ riscv64:
   - cd ../
   - make depends target=riscv64-linux-gnu
   except:
-    - master
     - tags
 
 
@@ -227,8 +211,6 @@ RISCV64:
     - ./amity-wallet-cli
     - ./amity-wallet-rpc
     - ./amityd
-    expire_in: 4 weeks
   only:
-    - master
     - tags
     
