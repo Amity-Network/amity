@@ -10,6 +10,7 @@ linux64:
   - make release-static
   except:
     - master
+    - tags
 
   
 LINUX64:
@@ -29,6 +30,7 @@ LINUX64:
     - ./amityd
   only:
     - master
+    - tags
 
 
 win64:
@@ -43,6 +45,7 @@ win64:
   - make depends target=x86_64-w64-mingw32
   except:
     - master
+    - tags
 
   
 WIN64:
@@ -66,6 +69,7 @@ WIN64:
     - ./amityd.exe
   only:
     - master
+    - tags
 
 
 macos64:
@@ -80,6 +84,7 @@ macos64:
   - make depends target=x86_64-apple-darwin11
   except:
     - master
+    - tags
 
 
 MACOS64:
@@ -103,6 +108,7 @@ MACOS64:
     - ./amityd
   only:
     - master
+    - tags
 
 
 arm64:
@@ -117,6 +123,7 @@ arm64:
   - make depends target=aarch64-linux-gnu
   except:
     - master
+    - tags
 
 
 ARM64:
@@ -140,6 +147,7 @@ ARM64:
     - ./amityd
   only:
     - master
+    - tags
 
 armhf:
   image: amityproject/armhf:builder
@@ -153,6 +161,7 @@ armhf:
   - make depends target=arm-linux-gnueabihf
   except:
     - master
+    - tags
 
 
 ARMHF:
@@ -176,6 +185,8 @@ ARMHF:
     - ./amityd
   only:
     - master
+    - tags
+
 
 riscv64:
   image: amityproject/riscv64:builder
@@ -189,6 +200,7 @@ riscv64:
   - make depends target=riscv64-linux-gnu
   except:
     - master
+    - tags
 
 
 RISCV64:
@@ -212,4 +224,5 @@ RISCV64:
     - ./amityd
   only:
     - master
+    - tags
     
