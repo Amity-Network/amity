@@ -129,7 +129,7 @@ ARM64:
   - cp -r ~/depends ./
   - cd ../
   - make depends target=aarch64-linux-gnu
-  - mv ~/build/aarch64-linux-gnu/release/bin/* ./  
+  - mv ./build/aarch64-linux-gnu/release/bin/* ./  
   artifacts:
     name: "Amity-$CI_COMMIT_TAG-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
     paths:
