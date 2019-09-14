@@ -72,6 +72,6 @@ RUN cd boost_${BOOST_VERSION} \
 # with the necessary fixes by malbit and m2049r to build for mobile.
 RUN cd /opt/android \
     && git clone https://gitlab.com/amity-project/amity.git --recursive --depth=1 \
-    && cd oscillate \
+    && cd amity \
     && mkdir -p build/release \
     && ./build-andy.sh
