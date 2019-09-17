@@ -75,14 +75,19 @@
 
 #define DIFFICULTY_BLOCKS_ESTIMATE_TIMESPAN             DIFFICULTY_TARGET //just alias; used by tests
 #define DIFFICULTY_WINDOW                               17
+#define DIFFICULTY_WINDOW_V2                            60                            
 #define DIFFICULTY_CUT                                  6
 #define DIFFICULTY_BLOCKS_COUNT                         DIFFICULTY_WINDOW + DIFFICULTY_CUT*2
+#define DIFFICULTY_BLOCKS_COUNT_V2                      60
 
 #define CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V1   DIFFICULTY_TARGET * CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS
 #define CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS       1
 
 #define BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT          10000  //by default, blocks ids count in synchronizing
 #define BLOCKS_SYNCHRONIZING_DEFAULT_COUNT              20     //by default, blocks count in blocks downloading
+#define BLOCKS_SYNCHRONIZING_MAX_COUNT                  2048
+#define RX_BLOCK_VERSION 4
+#define SEEDHASH_EPOCH_LAG 64
 
 #define CRYPTONOTE_MEMPOOL_TX_LIVETIME                  (86400*3) //seconds, three days
 #define CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME   604800 //seconds, one week
@@ -135,13 +140,16 @@
 
 struct hard_fork
 {
-    uint8_t version;
+    uint16_t version;
     uint64_t height;
 };
 
 // New constants are intended to go here
 namespace config
 {
+
+    
+
     uint64_t const DEFAULT_DUST_THRESHOLD = 0; // deprecated
     std::string const P2P_REMOTE_DEBUG_TRUSTED_PUB_KEY = "0000000000000000000000000000000000000000000000000000000000000000";
 
@@ -175,6 +183,9 @@ namespace config
 
     namespace testnet
     {
+        uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0x3c75c9; //amtn
+        uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 0x18f3c9; //amin
+        uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 0x3ef5c9; //amts
         uint16_t const P2P_DEFAULT_PORT = 21111;
         uint16_t const RPC_DEFAULT_PORT = 31112;
         uint16_t const ZMQ_RPC_DEFAULT_PORT = 18113;
@@ -186,28 +197,35 @@ namespace config
         std::vector<std::string> const seed_nodes = {
             "18.216.156.140:21111",
             "18.220.89.44:21111"
-         };
+        };
 
         static const hard_fork hard_forks[] = {
             { 1,   1},
             { 2, 550},
+            { 3, 600},
         };
     }
 
     namespace stagenet
     {
+        uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0x2275c9; //amst
+        uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 0x1d35c9; //amsi
+        uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 0x21f5c9; //amss
         uint16_t const P2P_DEFAULT_PORT = 19111;
         uint16_t const RPC_DEFAULT_PORT = 19112;
         uint16_t const ZMQ_RPC_DEFAULT_PORT = 19113;
-        boost::uuids::uuid const NETWORK_ID = { {
-            0x24, 0x31, 0xF1, 0x72 , 0x54, 0x36 , 0x36, 0xFF, 0xBB, 0x51, 0x00, 0x3C, 0x3D, 0xAA, 0x16, 0x2F
-        } }; // Bender's daydream
+        boost::uuids::uuid const NETWORK_ID = {{0x24, 0x31, 0xF1, 0x72 , 0x54, 0x36 , 0x36, 0xFF, 0xBB, 0x51, 0x00, 0x3C, 0x3D, 0xAA, 0x16, 0x2F}};
 
 		std::vector<std::string> const seed_nodes = { };
+
+        std::string const HF_MIN_VERSION = "0.0.0.1";
+        std::string const MIN_VERSION = "0.0.0.1";
 
         static const hard_fork hard_forks[] = {
             { 1,   1},
             { 2, 550},
+            { 3, 555},
+            { 4, 850},
         };
     }
 }
@@ -278,9 +296,9 @@ namespace cryptonote
             ::config::MIN_VERSION
             };
         static const config_t testnet = {
-            ::config::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
-            ::config::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX,
-            ::config::CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX,
+            ::config::testnet::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
+            ::config::testnet::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX,
+            ::config::testnet::CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX,
             ::config::testnet::P2P_DEFAULT_PORT,
             ::config::testnet::RPC_DEFAULT_PORT,
             ::config::testnet::ZMQ_RPC_DEFAULT_PORT,
@@ -291,9 +309,9 @@ namespace cryptonote
             ::config::testnet::MIN_VERSION
             };
         static const config_t stagenet = {
-            ::config::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
-            ::config::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX,
-            ::config::CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX,
+            ::config::stagenet::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
+            ::config::stagenet::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX,
+            ::config::stagenet::CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX,
             ::config::stagenet::P2P_DEFAULT_PORT,
             ::config::stagenet::RPC_DEFAULT_PORT,
             ::config::stagenet::ZMQ_RPC_DEFAULT_PORT,

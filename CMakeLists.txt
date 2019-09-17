@@ -35,6 +35,9 @@ include(CheckLinkerFlag)
 include(CheckLibraryExists)
 include(CheckFunctionExists)
 
+set (CMAKE_CXX_STANDARD 11)
+
+
 if (IOS)
     INCLUDE(CmakeLists_IOS.txt)
 endif()
@@ -274,6 +277,7 @@ if(APPLE)
 endif()
 
 if(MSVC OR MINGW)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
   set(DEFAULT_STATIC true)
 else()
   set(DEFAULT_STATIC false)
@@ -351,6 +355,7 @@ add_definitions("-DBLOCKCHAIN_DB=${BLOCKCHAIN_DB}")
 # On ARM, having libunwind package (with .so's only) installed breaks static link.
 # When possible, avoid stack tracing using libunwind in favor of using easylogging++.
 if (APPLE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
   set(DEFAULT_STACK_TRACE OFF)
   set(LIBUNWIND_LIBRARIES "")
 elseif (DEPENDS AND NOT LINUX)
@@ -412,10 +417,17 @@ endif()
 
 find_package(OpenSSL REQUIRED)
 message(STATUS "Using OpenSSL include dir at ${OPENSSL_INCLUDE_DIR}")
+
+
+find_package(CURL REQUIRED)
+message(STATUS "Using Curl include dir at ${CURL_INCLUDE_DIR}")
+
 include_directories(${OPENSSL_INCLUDE_DIR})
+include_directories(${CURL_INCLUDE_DIR})
 if(STATIC AND NOT IOS)
   if(UNIX)
     set(OPENSSL_LIBRARIES "${OPENSSL_LIBRARIES};${CMAKE_DL_LIBS};${CMAKE_THREAD_LIBS_INIT}")
+    set(CURL_LIBRARIES "${CURL_LIBRARIES}")
   endif()
 endif()
 
@@ -858,7 +870,7 @@ if(MINGW)
     set(ICU_LIBRARIES icuio icuin icuuc icudt icutu iconv)
   endif()
 elseif(APPLE OR OPENBSD OR ANDROID)
-  set(EXTRA_LIBRARIES "")
+  set(EXTRA_LIBRARIES)
 elseif(FREEBSD)
   set(EXTRA_LIBRARIES execinfo)
 elseif(DRAGONFLY)
@@ -965,5 +977,3 @@ option(BUILD_GUI_DEPS "Build GUI dependencies." OFF)
 # on libunbound shipped with their distribution instead
 option(INSTALL_VENDORED_LIBUNBOUND "Install libunbound binary built from source vendored with this repo." OFF)
 
-
-CHECK_C_COMPILER_FLAG(-std=c11 HAVE_C11)

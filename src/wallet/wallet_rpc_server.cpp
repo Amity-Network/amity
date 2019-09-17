@@ -3625,7 +3625,9 @@ namespace tools
       er.message = "Failed to validate address format.";
       return false;
     }
-
+    
+  
+    cryptonote::network_type nettype;
     if (prefix != ::config::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX)
     {
       er.code = WALLET_RPC_ERROR_CODE_UNKNOWN_ERROR;
@@ -4197,7 +4199,7 @@ namespace tools
     static const struct { cryptonote::network_type type; const char *stype; } net_types[] = {
       { cryptonote::MAINNET, "mainnet" },
       { cryptonote::TESTNET, "testnet" },
-      { cryptonote::STAGENET, "stagenet" },
+      { cryptonote::STAGENET, "stagenet" }, 
     };
     if (!req.any_net_type && !m_wallet) return not_open(er);
     for (const auto &net_type: net_types)

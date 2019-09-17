@@ -203,4 +203,52 @@ namespace cryptonote {
     next_difficulty = static_cast<uint64_t>(nextDifficulty);
     return next_difficulty;
   }
+
+
+  // LWMA-3 difficulty algorithm
+  // Copyright (c) 2017-2018 Zawy, MIT License
+  // https://github.com/zawy12/difficulty-algorithms/issues/3
+  // See commented version for required config file changes. Fix your FTL and MTP.
+
+  // difficulty_type should be uint64_t
+  difficulty_type next_difficulty_lwma_3(std::vector<uint64_t> timestamps,
+      std::vector<difficulty_type> cumulative_difficulties) {
+
+      uint64_t  T = DIFFICULTY_TARGET;
+      uint64_t  N = DIFFICULTY_WINDOW_V2; // N=45, 60, and 90 for T=600, 120, 60.
+      uint64_t  L(0), ST, sum_3_ST(0), next_D, prev_D, this_timestamp, previous_timestamp;
+
+      assert(timestamps.size() == cumulative_difficulties.size() &&
+                     timestamps.size() <= N+1 );
+
+      // If it's a new coin, do startup code.
+      // Increase difficulty_guess if it needs to be much higher, but guess lower than lowest guess.
+      uint64_t difficulty_guess = 100000;
+      if (timestamps.size() <= 10 ) {   return difficulty_guess;   }
+      if ( timestamps.size() < N +1 ) { N = timestamps.size()-1;  }
+
+      // If hashrate/difficulty ratio after a fork is < 1/3 prior ratio, hardcode D for N+1 blocks after fork.
+      // difficulty_guess = 100; //  Dev may change.  Guess low.
+      // if (height <= UPGRADE_HEIGHT + N+1 ) { return difficulty_guess;  }
+
+      previous_timestamp = timestamps[0];
+      for ( uint64_t i = 1; i <= N; i++) {
+        if ( timestamps[i] > previous_timestamp  ) {
+            this_timestamp = timestamps[i];
+        } else {  this_timestamp = previous_timestamp+1;   }
+        ST = std::min(6*T ,this_timestamp - previous_timestamp);
+        previous_timestamp = this_timestamp;
+        L +=  ST * i ;
+        if ( i > N-3 ) { sum_3_ST += ST; }
+      }
+
+      next_D = ((cumulative_difficulties[N] - cumulative_difficulties[0])*T*(N+1)*99)/(100*2*L);
+
+      prev_D = cumulative_difficulties[N] - cumulative_difficulties[N-1];
+      next_D = std::max((prev_D*67)/100, std::min(next_D, (prev_D*150)/100));
+
+      if ( sum_3_ST < (8*T)/10) {  next_D = std::max(next_D,(prev_D*108)/100); }
+
+      return next_D;
+  }
 }
