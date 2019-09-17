@@ -3,20 +3,22 @@ stages:
   - deploy
 
 linux64:
-  image: amityproject/linux64:builder
+  image: amityproject/ubuntu:builder
   stage: build
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
-  - git submodule init && git submodule update
   - make release-static
   except:
     - tags
 
   
 LINUX64:
-  image: amityproject/linux64:builder
+  image: amityproject/ubuntu:builder
   stage: deploy
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
-  - git submodule init && git submodule update
   - make release-static
   - mv ./build/release/bin/* ./
   artifacts:
@@ -32,10 +34,11 @@ LINUX64:
 
 
 win64:
-  image: amityproject/win64:builder
+  image: amityproject/ubuntu:builder
   stage: build
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
-  - git submodule init && git submodule update
   - rm -r contrib/depends
   - cd contrib 
   - cp -r ~/depends ./
@@ -46,10 +49,11 @@ win64:
 
   
 WIN64:
-  image: amityproject/win64:builder
+  image: amityproject/ubuntu:builder
   stage: deploy
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
-  - git submodule init && git submodule update
   - rm -r contrib/depends
   - cd contrib 
   - cp -r ~/depends ./
@@ -71,28 +75,24 @@ WIN64:
 macos64:
   image: amityproject/macos:builder
   stage: build
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
-  - git submodule init && git submodule update
-  - rm -r contrib/depends
-  - cd contrib 
-  - cp -r ~/depends ./
-  - cd ../
-  - make depends target=x86_64-apple-darwin11
-  except:
-    - tags
+  - make release 
+  tags:
+    - macos
+  only:
+    - branches
 
 
 MACOS64:
   image: amityproject/macos:builder
   stage: deploy
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
-  - git submodule init && git submodule update
-  - rm -r contrib/depends
-  - cd contrib 
-  - cp -r ~/depends ./
-  - cd ../
-  - make depends target=x86_64-apple-darwin11
-  - mv ./build/x86_64-apple-darwin11/release/bin/* ./
+  - make release
+  - mv ./build/release/bin/* ./
   artifacts:
     name: "Amity-$CI_COMMIT_TAG-$CI_JOB_NAME-$CI_COMMIT_SHORT_SHA"
     paths:
@@ -101,15 +101,20 @@ MACOS64:
     - ./amity-wallet-cli
     - ./amity-wallet-rpc
     - ./amityd   
+  tags:
+    - macos
   only:
     - tags
+  except:
+    - branches
 
 
 arm64:
-  image: amityproject/aarch64:builder
+  image: amityproject/ubuntu:builder
   stage: build
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
-  - git submodule init && git submodule update
   - rm -r contrib/depends
   - cd contrib 
   - cp -r ~/depends ./
@@ -120,10 +125,11 @@ arm64:
 
 
 ARM64:
-  image: amityproject/aarch64:builder
+  image: amityproject/ubuntu:builder
   stage: deploy
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
-  - git submodule init && git submodule update
   - rm -r contrib/depends
   - cd contrib 
   - cp -r ~/depends ./
@@ -142,10 +148,11 @@ ARM64:
     - tags
 
 armhf:
-  image: amityproject/armhf:builder
+  image: amityproject/ubuntu:builder
   stage: build
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
-  - git submodule init && git submodule update
   - rm -r contrib/depends
   - cd contrib 
   - cp -r ~/depends ./
@@ -156,10 +163,11 @@ armhf:
 
 
 ARMHF:
-  image: amityproject/armhf:builder
+  image: amityproject/ubuntu:builder
   stage: deploy
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
-  - git submodule init && git submodule update
   - rm -r contrib/depends
   - cd contrib 
   - cp -r ~/depends ./
@@ -179,10 +187,11 @@ ARMHF:
 
 
 riscv64:
-  image: amityproject/riscv64:builder
+  image: amityproject/ubuntu:builder
   stage: build
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
-  - git submodule init && git submodule update
   - rm -r contrib/depends
   - cd contrib 
   - cp -r ~/depends ./
@@ -193,10 +202,11 @@ riscv64:
 
 
 RISCV64:
-  image: amityproject/riscv64:builder
+  image: amityproject/ubuntu:builder
   stage: deploy
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
-  - git submodule init && git submodule update
   - rm -r contrib/depends
   - cd contrib 
   - cp -r ~/depends ./
