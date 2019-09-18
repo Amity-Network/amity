@@ -172,7 +172,7 @@ namespace nodetool
       KV_SERIALIZE(peer_id)
       KV_SERIALIZE(local_time)
       KV_SERIALIZE(my_port)
-	  KV_SERIALIZE_OPT(rpc_port, (uint16_t)(0))
+      KV_SERIALIZE_OPT(rpc_port, (uint16_t)(0))
       KV_SERIALIZE(version)
     END_KV_SERIALIZE_MAP()
   };

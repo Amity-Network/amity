@@ -131,10 +131,6 @@ public:
   bool out_peers(uint64_t limit);
 
   bool in_peers(uint64_t limit);
-
-  bool start_save_graph();
-  
-  bool stop_save_graph();
   
   bool hard_fork_info(uint8_t version);
 
