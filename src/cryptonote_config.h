@@ -195,8 +195,8 @@ namespace config
         std::string const MIN_VERSION    = "0.0.0.1";
 
         std::vector<std::string> const seed_nodes = {
-            "18.216.156.140:21111",
-            "18.220.89.44:21111"
+            "167.86.119.203:21111",
+            "167.86.119.62:21111"
         };
 
         static const hard_fork hard_forks[] = {
