@@ -1,4 +1,3 @@
-// Copyright (c) 2019, The NERVA Project
 // Copyright (c) 2006-2013, Andrey N. Sabelnikov, www.sabelnikov.net
 // All rights reserved.
 // 
