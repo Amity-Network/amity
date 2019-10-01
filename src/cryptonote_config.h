@@ -86,8 +86,8 @@
 #define BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT          10000  //by default, blocks ids count in synchronizing
 #define BLOCKS_SYNCHRONIZING_DEFAULT_COUNT              20     //by default, blocks count in blocks downloading
 #define BLOCKS_SYNCHRONIZING_MAX_COUNT                  2048
-#define RX_BLOCK_VERSION 4
-#define SEEDHASH_EPOCH_LAG 64
+#define RX_BLOCK_VERSION                                4
+#define SEEDHASH_EPOCH_LAG                              64
 
 #define CRYPTONOTE_MEMPOOL_TX_LIVETIME                  (86400*3) //seconds, three days
 #define CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME   604800 //seconds, one week
@@ -207,14 +207,15 @@ namespace config
         std::string const MIN_VERSION    = "0.0.0.1";
 
         std::vector<std::string> const seed_nodes = {
-            "18.216.156.140:21111",
-            "18.220.89.44:21111"
+            "167.86.119.203:21111",
+            "167.86.119.62:21111"
         };
 
         static const hard_fork hard_forks[] = {
             { 1,   1},
             { 2, 550},
             { 3, 600},
+            { 4, 850},
         };
     }
 
