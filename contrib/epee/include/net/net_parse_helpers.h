@@ -94,7 +94,7 @@ namespace net_utils
     return true;
   }
   
-  inline 
+  inline
     bool parse_uri(const std::string uri, http::uri_content& content)
   {
 
