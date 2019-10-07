@@ -50,6 +50,8 @@
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+#include <functional>
+#include <random>
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"
@@ -154,7 +156,7 @@ PRAGMA_WARNING_DISABLE_VS(4355)
     }
     else
     {
-      const auto ip_{remote_ep.address().to_v6()};
+      const auto ip_ = remote_ep.address().to_v6();
       return start(is_income, is_multithreaded, ipv6_network_address{ip_, remote_ep.port()});
     }
     CATCH_ENTRY_L0("connection<t_protocol_handler>::start()", false);
@@ -1476,7 +1478,10 @@ POP_WARNINGS
         MINFO("Resolving address as IPv4 failed, trying IPv6");
       }
     }
-    //////////////////////////////////////////////////////////////////////////
+    else
+    {
+      bind_ip_to_use = bind_ip;
+    }
 
     if (try_ipv6)
     {
