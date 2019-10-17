@@ -410,12 +410,12 @@ namespace cryptonote
         return false;
       }
     }
-    //cryptonote::get_account_address_from_str(addr_info, nettype, DONATION_ADDR)) 
-    //{
-    //   LOG_ERROR("Invalid donation address, starting daemon canceled");
-    //   return false;
-    // }
-    // m_donate_mine_address = addr_info.address;
+    if(!cryptonote::get_account_address_from_str(addr_info, nettype, DONATION_ADDR)) 
+    {
+       LOG_ERROR("Invalid donation address, starting daemon canceled");
+       return false;
+    }
+    m_donate_mine_address = addr_info.address;
 
     // Background mining parameters
     // Let init set all parameters even if background mining is not enabled, they can start later with params set

@@ -159,9 +159,6 @@ struct hard_fork
 // New constants are intended to go here
 namespace config
 {
-
-    
-
     uint64_t const DEFAULT_DUST_THRESHOLD = 0; // deprecated
     std::string const P2P_REMOTE_DEBUG_TRUSTED_PUB_KEY = "0000000000000000000000000000000000000000000000000000000000000000";
 
@@ -195,9 +192,6 @@ namespace config
 
     namespace testnet
     {
-        uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0x3c75c9; //amtn
-        uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 0x18f3c9; //amin
-        uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 0x3ef5c9; //amts
         uint16_t const P2P_DEFAULT_PORT = 21111;
         uint16_t const RPC_DEFAULT_PORT = 31112;
         uint16_t const ZMQ_RPC_DEFAULT_PORT = 18113;
@@ -221,9 +215,6 @@ namespace config
 
     namespace stagenet
     {
-        uint64_t const CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = 0x2275c9; //amst
-        uint64_t const CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX = 0x1d35c9; //amsi
-        uint64_t const CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX = 0x21f5c9; //amss
         uint16_t const P2P_DEFAULT_PORT = 19111;
         uint16_t const RPC_DEFAULT_PORT = 19112;
         uint16_t const ZMQ_RPC_DEFAULT_PORT = 19113;
@@ -309,9 +300,9 @@ namespace cryptonote
             ::config::MIN_VERSION
             };
         static const config_t testnet = {
-            ::config::testnet::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
-            ::config::testnet::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX,
-            ::config::testnet::CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX,
+            ::config::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
+            ::config::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX,
+            ::config::CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX,
             ::config::testnet::P2P_DEFAULT_PORT,
             ::config::testnet::RPC_DEFAULT_PORT,
             ::config::testnet::ZMQ_RPC_DEFAULT_PORT,
@@ -322,9 +313,9 @@ namespace cryptonote
             ::config::testnet::MIN_VERSION
             };
         static const config_t stagenet = {
-            ::config::stagenet::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
-            ::config::stagenet::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX,
-            ::config::stagenet::CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX,
+            ::config::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,
+            ::config::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX,
+            ::config::CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX,
             ::config::stagenet::P2P_DEFAULT_PORT,
             ::config::stagenet::RPC_DEFAULT_PORT,
             ::config::stagenet::ZMQ_RPC_DEFAULT_PORT,
