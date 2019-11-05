@@ -175,8 +175,8 @@ namespace config
 
     uint32_t const GENESIS_NONCE = 10000;
 
-    std::string const HF_MIN_VERSION = "0.0.0.1";
-    std::string const MIN_VERSION    = "0.0.0.1";
+    std::string const HF_MIN_VERSION = "0.1.0.0";
+    std::string const MIN_VERSION    = "0.0.0.2";
     
     std::vector<std::string> const seed_nodes = { 
         "51.75.92.73:41018", // GERMANY
@@ -188,6 +188,7 @@ namespace config
     static const hard_fork hard_forks[] = {
         { 1,   1},
         { 2, 550},
+        { 3, 125000},
     };
 
     namespace testnet
@@ -209,7 +210,6 @@ namespace config
             { 1,   1},
             { 2, 550},
             { 3, 600},
-            { 4, 850},
         };
     }
 
@@ -229,7 +229,6 @@ namespace config
             { 1,   1},
             { 2, 550},
             { 3, 555},
-            { 4, 850},
         };
     }
 }
