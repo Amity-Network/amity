@@ -75,14 +75,19 @@
 
 #define DIFFICULTY_BLOCKS_ESTIMATE_TIMESPAN             DIFFICULTY_TARGET //just alias; used by tests
 #define DIFFICULTY_WINDOW                               17
+#define DIFFICULTY_WINDOW_V2                            60                            
 #define DIFFICULTY_CUT                                  6
 #define DIFFICULTY_BLOCKS_COUNT                         DIFFICULTY_WINDOW + DIFFICULTY_CUT*2
+#define DIFFICULTY_BLOCKS_COUNT_V2                      60
 
 #define CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_SECONDS_V1   DIFFICULTY_TARGET * CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS
 #define CRYPTONOTE_LOCKED_TX_ALLOWED_DELTA_BLOCKS       1
 
 #define BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT          10000  //by default, blocks ids count in synchronizing
 #define BLOCKS_SYNCHRONIZING_DEFAULT_COUNT              20     //by default, blocks count in blocks downloading
+#define BLOCKS_SYNCHRONIZING_MAX_COUNT                  2048
+#define RX_BLOCK_VERSION                                4
+#define SEEDHASH_EPOCH_LAG                              64
 
 #define CRYPTONOTE_MEMPOOL_TX_LIVETIME                  (86400*3) //seconds, three days
 #define CRYPTONOTE_MEMPOOL_TX_FROM_ALT_BLOCK_LIVETIME   604800 //seconds, one week
@@ -118,6 +123,18 @@
 
 #define RPC_IP_FAILS_BEFORE_BLOCK                       3
 
+
+// see src/cryptonote_protocol/levin_notify.cpp
+#define CRYPTONOTE_NOISE_MIN_EPOCH                      5      // minutes
+#define CRYPTONOTE_NOISE_EPOCH_RANGE                    30     // seconds
+#define CRYPTONOTE_NOISE_MIN_DELAY                      10     // seconds
+#define CRYPTONOTE_NOISE_DELAY_RANGE                    5      // seconds
+#define CRYPTONOTE_NOISE_BYTES                          3*1024 // 3 KiB
+#define CRYPTONOTE_NOISE_CHANNELS                       2      // Max outgoing connections per zone used for noise/covert sending
+
+#define CRYPTONOTE_MAX_FRAGMENTS                        20 // ~20 * NOISE_BYTES max payload size for covert/noise send
+
+
 //#define ALLOW_DEBUG_COMMANDS
 
 #define CRYPTONOTE_NAME                                 "amity"
@@ -135,7 +152,7 @@
 
 struct hard_fork
 {
-    uint8_t version;
+    uint16_t version;
     uint64_t height;
 };
 
@@ -158,8 +175,8 @@ namespace config
 
     uint32_t const GENESIS_NONCE = 10000;
 
-    std::string const HF_MIN_VERSION = "0.0.0.1";
-    std::string const MIN_VERSION    = "0.0.0.1";
+    std::string const HF_MIN_VERSION = "0.1.0.0";
+    std::string const MIN_VERSION    = "0.0.0.2";
     
     std::vector<std::string> const seed_nodes = { 
         "51.75.92.73:41018", // GERMANY
@@ -171,6 +188,7 @@ namespace config
     static const hard_fork hard_forks[] = {
         { 1,   1},
         { 2, 550},
+        { 3, 125000},
     };
 
     namespace testnet
@@ -184,13 +202,14 @@ namespace config
         std::string const MIN_VERSION    = "0.0.0.1";
 
         std::vector<std::string> const seed_nodes = {
-            "18.216.156.140:21111",
-            "18.220.89.44:21111"
-         };
+            "167.86.119.203:21111",
+            "167.86.119.62:21111"
+        };
 
         static const hard_fork hard_forks[] = {
             { 1,   1},
             { 2, 550},
+            { 3, 600},
         };
     }
 
@@ -199,15 +218,17 @@ namespace config
         uint16_t const P2P_DEFAULT_PORT = 19111;
         uint16_t const RPC_DEFAULT_PORT = 19112;
         uint16_t const ZMQ_RPC_DEFAULT_PORT = 19113;
-        boost::uuids::uuid const NETWORK_ID = { {
-            0x24, 0x31, 0xF1, 0x72 , 0x54, 0x36 , 0x36, 0xFF, 0xBB, 0x51, 0x00, 0x3C, 0x3D, 0xAA, 0x16, 0x2F
-        } }; // Bender's daydream
+        boost::uuids::uuid const NETWORK_ID = {{0x24, 0x31, 0xF1, 0x72 , 0x54, 0x36 , 0x36, 0xFF, 0xBB, 0x51, 0x00, 0x3C, 0x3D, 0xAA, 0x16, 0x2F}};
 
 		std::vector<std::string> const seed_nodes = { };
+
+        std::string const HF_MIN_VERSION = "0.0.0.1";
+        std::string const MIN_VERSION = "0.0.0.1";
 
         static const hard_fork hard_forks[] = {
             { 1,   1},
             { 2, 550},
+            { 3, 555},
         };
     }
 }

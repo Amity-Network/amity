@@ -6,8 +6,8 @@ RUN apt-get update && apt-get install -y unzip automake build-essential curl cma
 WORKDIR /opt/android
 
 ENV ANDROID_NDK_REVISION 17b
-ENV BOOST_VERSION 1_67_0
-ENV BOOST_VERSION_DOT 1.67.0
+ENV BOOST_VERSION 1_68_0
+ENV BOOST_VERSION_DOT 1.68.0
 
 ## Getting Android NDK
 RUN curl -s -O https://dl.google.com/android/repository/android-ndk-r${ANDROID_NDK_REVISION}-linux-x86_64.zip \

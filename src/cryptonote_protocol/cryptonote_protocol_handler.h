@@ -113,6 +113,7 @@ namespace cryptonote
     void on_connection_close(cryptonote_connection_context &context);
     void set_max_out_peers(unsigned int max) { m_max_out_peers = max; }
     void set_no_sync(bool value) { m_no_sync = value; }
+    std::string get_peers_overview() const;
     bool needs_new_sync_connections() const;
   private:
     //----------------- commands handlers ----------------------------------------------
