@@ -1,11 +1,11 @@
-packages:=boost openssl zeromq cppzmq expat ldns readline libiconv hidapi protobuf libusb
+packages:=boost curl openssl zeromq cppzmq expat ldns readline libiconv hidapi protobuf libusb
 native_packages := native_ccache native_protobuf
 
 darwin_native_packages = native_biplist native_ds_store native_mac_alias
 darwin_packages = sodium-darwin ncurses
 
 linux_packages = eudev ncurses sodium
-qt_packages = qt
+#qt_packages = qt
 
 ifeq ($(build_tests),ON)
 packages += gtest

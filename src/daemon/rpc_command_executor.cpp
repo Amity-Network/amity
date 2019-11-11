@@ -48,22 +48,19 @@
 namespace daemonize {
 
 namespace {
+  
   void print_peer(std::string const & prefix, cryptonote::peer const & peer)
   {
     time_t now;
     time(&now);
     time_t last_seen = static_cast<time_t>(peer.last_seen);
 
-    std::string id_str;
-    std::string port_str;
     std::string elapsed = epee::misc_utils::get_time_interval_string(now - last_seen);
-    std::string ip_str = epee::string_tools::get_ip_string_from_int32(peer.ip);
-    std::stringstream peer_id_str;
-    peer_id_str << std::hex << std::setw(16) << peer.id;
-    peer_id_str >> id_str;
+    std::string id_str = epee::string_tools::pad_string(epee::string_tools::to_string_hex(peer.id), 16, '0', true);
+    std::string port_str;
     epee::string_tools::xtype_to_string(peer.port, port_str);
-    std::string addr_str = ip_str + ":" + port_str;
-	std::string rpc_port = peer.rpc_port ? std::to_string(peer.rpc_port) : "-";
+    std::string addr_str = peer.host + ":" + port_str;
+    std::string rpc_port = peer.rpc_port ? std::to_string(peer.rpc_port) : "-";
     tools::msg_writer() << boost::format("%-10s %-25s %-25s %-5s %s") % prefix % id_str % addr_str % rpc_port % elapsed;
   }
 
@@ -1500,58 +1497,6 @@ bool t_rpc_command_executor::in_peers(uint64_t limit)
 	return true;
 }
 
-bool t_rpc_command_executor::start_save_graph()
-{
-	cryptonote::COMMAND_RPC_START_SAVE_GRAPH::request req;
-	cryptonote::COMMAND_RPC_START_SAVE_GRAPH::response res;
-	std::string fail_message = "Unsuccessful";
-	
-	if (m_is_rpc)
-	{
-		if (!m_rpc_client->rpc_request(req, res, "/start_save_graph", fail_message.c_str()))
-		{
-			return true;
-		}
-	}
-	
-	else
-    {
-		if (!m_rpc_server->on_start_save_graph(req, res) || res.status != CORE_RPC_STATUS_OK)
-		{
-			tools::fail_msg_writer() << make_error(fail_message, res.status);
-			return true;
-		}
-	}
-	
-	tools::success_msg_writer() << "Saving graph is now on";
-	return true;
-}
-
-bool t_rpc_command_executor::stop_save_graph()
-{
-	cryptonote::COMMAND_RPC_STOP_SAVE_GRAPH::request req;
-	cryptonote::COMMAND_RPC_STOP_SAVE_GRAPH::response res;
-	std::string fail_message = "Unsuccessful";
-	
-	if (m_is_rpc)
-	{
-		if (!m_rpc_client->rpc_request(req, res, "/stop_save_graph", fail_message.c_str()))
-		{
-			return true;
-		}
-	}
-	
-	else
-    {
-		if (!m_rpc_server->on_stop_save_graph(req, res) || res.status != CORE_RPC_STATUS_OK)
-		{
-			tools::fail_msg_writer() << make_error(fail_message, res.status);
-			return true;
-		}
-	}
-	tools::success_msg_writer() << "Saving graph is now off";
-	return true;
-}
 
 bool t_rpc_command_executor::hard_fork_info(uint8_t version)
 {
