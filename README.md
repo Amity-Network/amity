@@ -24,5 +24,5 @@ See [LICENSE](LICENSE).
   
 ##### Build Commands
 
-make release-static
+`make release-static`
 
