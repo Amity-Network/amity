@@ -179,10 +179,10 @@ namespace config
     std::string const MIN_VERSION    = "0.0.0.2";
     
     std::vector<std::string> const seed_nodes = { 
-        "51.75.92.73:41018", // GERMANY
-        "54.39.178.95:41018", // CANADA
-        "3.17.204.129:41018", // USA
-        "3.0.147.172:41018" // SINGAPORE
+        "s1.xam.xyz:41018", // GERMANY
+        "s2.xam.xyz:41018", // CANADA
+        "s3.xam.xyz:41018", // USA
+        "s4.xam.xyz:41018" // SINGAPORE
     };
 
     static const hard_fork hard_forks[] = {
