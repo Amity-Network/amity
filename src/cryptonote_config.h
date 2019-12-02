@@ -86,7 +86,7 @@
 #define BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT          10000  //by default, blocks ids count in synchronizing
 #define BLOCKS_SYNCHRONIZING_DEFAULT_COUNT              20     //by default, blocks count in blocks downloading
 #define BLOCKS_SYNCHRONIZING_MAX_COUNT                  2048
-#define RX_BLOCK_VERSION                                4
+#define RX_BLOCK_VERSION                                3 
 #define SEEDHASH_EPOCH_LAG                              64
 
 #define CRYPTONOTE_MEMPOOL_TX_LIVETIME                  (86400*3) //seconds, three days
@@ -169,7 +169,7 @@ namespace config
     uint16_t const P2P_DEFAULT_PORT = 41018;
     uint16_t const RPC_DEFAULT_PORT = 51018;
     uint16_t const ZMQ_RPC_DEFAULT_PORT = 37113;
-    boost::uuids::uuid const NETWORK_ID = {{0x42, 0x38, 0xB1, 0x75, 0x01, 0x82, 0x16, 0xA1, 0x61, 0x04, 0x41, 0x21, 0x17, 0x31, 0xB1, 0x52}};
+    boost::uuids::uuid const NETWORK_ID = {{0x42, 0x38, 0xB1, 0x75, 0x01, 0x82, 0x16, 0xA1, 0x41, 0x21, 0x17, 0x61, 0x04, 0x31, 0xB1, 0x52}};
     std::string const GENESIS_TX = 
     "01e80201ff000180bed285dd8d06026ca32c5a66b9d7cb7cb76dbea605fffe5f501ddec0d0dec193c5fea177589a8d21012137037f61b653a39be231017497f553868213197f35d74761474c30b66a99b800";
 
@@ -179,10 +179,10 @@ namespace config
     std::string const MIN_VERSION    = "0.0.0.2";
     
     std::vector<std::string> const seed_nodes = { 
-        "51.75.92.73:41018", // GERMANY
-        "54.39.178.95:41018", // CANADA
-        "3.17.204.129:41018", // USA
-        "3.0.147.172:41018" // SINGAPORE
+        "s1.xam.xyz:41018", // GERMANY
+        "s2.xam.xyz:41018", // CANADA
+        "s3.xam.xyz:41018", // USA
+        "s4.xam.xyz:41018" // SINGAPORE
     };
 
     static const hard_fork hard_forks[] = {
