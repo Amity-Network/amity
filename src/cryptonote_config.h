@@ -175,8 +175,8 @@ namespace config
 
     uint32_t const GENESIS_NONCE = 10000;
 
-    std::string const HF_MIN_VERSION = "0.1.0.0";
-    std::string const MIN_VERSION    = "0.0.0.2";
+    std::string const HF_MIN_VERSION = "0.1.0.3";
+    std::string const MIN_VERSION    = "0.1.0.3";
     
     std::vector<std::string> const seed_nodes = { 
         "51.75.92.73:41018", // GERMANY
