@@ -1424,7 +1424,7 @@ namespace cryptonote
       LOG_ERROR("Failed to create block template");
       return false;
     }
-    if (b.major_version >= RX_BLOCK_VERSION)
+    if (b.major_version == RX_BLOCK_VERSION)
     {
       uint64_t seed_height, next_height;
       crypto::hash seed_hash;
