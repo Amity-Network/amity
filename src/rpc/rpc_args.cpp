@@ -115,6 +115,8 @@ namespace cryptonote
   {
     const descriptors arg{};
     command_line::add_arg(desc, arg.rpc_bind_ip);
+    if (basic_auth_option)
+      command_line::add_arg(desc, arg.rpc_auth_basic);
     command_line::add_arg(desc, arg.rpc_bind_ipv6_address);
     command_line::add_arg(desc, arg.rpc_use_ipv6);
     command_line::add_arg(desc, arg.rpc_require_ipv4);
