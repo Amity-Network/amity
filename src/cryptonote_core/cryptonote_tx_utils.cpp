@@ -653,7 +653,7 @@ namespace cryptonote
     rx_alt_slowhash(context, main_height, seed_height, seed_hash.data, context->salt, CN_SALT_MEMORY, res.data);
   }
 
-  bool get_block_longhash(crypto::cn_hash_context_t *context, Blockchain *bc, const block& b, crypto::hash& res, const uint64_t height, const int miners)
+ bool get_block_longhash(crypto::cn_hash_context_t *context, Blockchain *bc, const block& b, crypto::hash& res, const uint64_t height, const int miners)
   {
     if (b.major_version < 2) {
       blobdata bd = get_block_hashing_blob(b);
@@ -661,12 +661,16 @@ namespace cryptonote
       return true;
     }
     switch (b.major_version) {
+      case 4:
+        return get_block_longhash_v1(context, bc, b, res, height);
+      case 3:
+        return get_block_longhash_v2(context, bc, b, res, height, miners);  
       case 2:
         return get_block_longhash_v1(context, bc, b, res, height);
       default:
-        return get_block_longhash_v2(context, bc, b, res, height, miners);
-      }
+        LOG_ERROR("No hashing algorithm specified for block version " << b.major_version);
     }
+  }
   //---------------------------------------------------------------
   crypto::hash get_block_longhash(crypto::cn_hash_context_t *context, Blockchain *bc, const block& b, const uint64_t height, const int miners)
   {

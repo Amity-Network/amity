@@ -1612,7 +1612,7 @@ bool Blockchain::handle_alternative_block(const block& b, const crypto::hash& id
     difficulty_type current_diff = get_next_difficulty_for_alternative_chain(alt_chain, bei);
     CHECK_AND_ASSERT_MES(current_diff, false, "!!!!!!! DIFFICULTY OVERHEAD !!!!!!!");
     crypto::hash proof_of_work = null_hash;
-    if (b.major_version >= RX_BLOCK_VERSION)
+    if (b.major_version == RX_BLOCK_VERSION)
     {
       crypto::hash seedhash = null_hash;
       uint64_t seedheight = rx_seedheight(bei.height);
