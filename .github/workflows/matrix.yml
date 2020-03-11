@@ -26,9 +26,10 @@ jobs:
         run: |
           make release-static -j2
           zip LINUX64.zip ./build/release/bin/* 
-          mv ./build/release/bin/LINUX64.zip ./
+
 
       - name: Upload artifact
+        if: github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v1.0.0
         with:
           name: LINUX64
@@ -62,9 +63,15 @@ jobs:
           cp -r /root/depends ./
           cd ../
           make depends target=aarch64-linux-gnu -j2
+          zip AARCH64.zip ./build/aarch64-linux-gnu/release/bin/* 
+                    
 
       - name: Upload artifact
+        if: github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v1.0.0
+        with:
+          name: AARCH64
+          path: ./AARCH64.zip
 
   
   armhf_build:
@@ -94,9 +101,15 @@ jobs:
           cp -r /root/depends ./
           cd ../
           make depends target=arm-linux-gnueabihf -j2
+          zip ARMHF.zip ./build/arm-linux-gnueabihf/release/bin/* 
+                    
 
       - name: Upload artifact
+        if: github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v1.0.0
+        with:
+          name: ARMHF
+          path: ./ARMHF.zip
 
 
   win64_build:
@@ -126,9 +139,15 @@ jobs:
           cp -r /root/depends ./
           cd ../
           make depends target=x86_64-w64-mingw32 -j2
+          zip WIN64.zip ./build/x86_64-w64-mingw32/release/bin/* 
+                    
 
       - name: Upload artifact
+        if: github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v1.0.0
+        with:
+          name: WIN64
+          path: ./WIN64.zip
 
           
   riscv64_build:
@@ -158,9 +177,15 @@ jobs:
           cp -r /root/depends ./
           cd ../
           make depends target=riscv64-linux-gnu -j2
+          zip RISCV64.zip ./build/riscv64-linux-gnu/release/bin/* 
+                    
 
       - name: Upload artifact
+        if: github.ref == 'refs/heads/master'
         uses: actions/upload-artifact@v1.0.0
+        with:
+          name: RISCV64
+          path: ./RISCV64.zip
  
 
   macos_build:
@@ -183,9 +208,16 @@ jobs:
         if: matrix.build_name == 'MACOS'
         run: |
           make release-static-mac-x86_64 -j2
-        
+          zip MACOS.zip ./build/release/bin/* 
+                    
+
       - name: Upload artifact
+        if: github.ref == 'refs/heads/master'       
         uses: actions/upload-artifact@v1.0.0
+        with:
+          name: MACOS
+          path: ./MACOS.zip
+        
 
 
       
