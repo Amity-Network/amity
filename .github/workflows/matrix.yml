@@ -25,9 +25,14 @@ jobs:
         if: matrix.build_name == 'LINUX64'
         run: |
           make release-static -j2
+          zip LINUX64.zip ./build/release/bin/* 
+          mv ./build/release/bin/LINUX64.zip ./
 
       - name: Upload artifact
         uses: actions/upload-artifact@v1.0.0
+        with:
+          name: LINUX64
+          path: ./LINUX64.zip
 
 
   aarch64_build:
