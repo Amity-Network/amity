@@ -769,7 +769,7 @@ else()
   endif()
 
   if(APPLE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=default -DGTEST_HAS_TR1_TUPLE=0")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden -DGTEST_HAS_TR1_TUPLE=0")
   endif()
 
   set(DEBUG_FLAGS "-g3 -O0")
@@ -833,7 +833,7 @@ endif()
 
 set(OLD_LIB_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
 if(STATIC)
-  if(MINGW)
+  if(MINGW OR APPLE)
     set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
     set(Boost_NO_BOOST_CMAKE ON)
   endif()

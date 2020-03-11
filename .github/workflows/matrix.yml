@@ -1,0 +1,166 @@
+name: Build
+on: [push, pull_request]
+
+jobs:
+  linux_build:
+    name: ${{ matrix.build_name }}
+    runs-on: ubuntu-18.04
+    container:
+      image: docker://amityproject/armhf:latest
+    strategy:
+      matrix:
+        build_name: ['LINUX64'] 
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: recursive
+
+      - name: Dependencies
+        run: |
+          apt update
+          apt install -y git curl ca-certificates nano zip unzip tar xz-utils cmake g++ make pkg-config libtool-bin autoconf automake build-essential cmake pkg-config pcsc-tools pcscd libpcsclite1 python-dev virtualenv libudev-dev libhidapi-dev libzmq3-dev libunbound-dev libboost-all-dev libusb-1.0-0-dev libusb-dev libssl-dev libsodium-dev libcurl4-openssl-dev libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libhidapi-libusb0 libnorm-dev libpgm-dev g++-aarch64-linux-gnu
+          
+      
+      - name: Build LINUX64
+        if: matrix.build_name == 'LINUX64'
+        run: |
+          make release-static -j2
+
+  aarch64_build:
+    name: ${{ matrix.build_name }}
+    runs-on: ubuntu-18.04
+    container:
+      image: docker://amityproject/aarch64:latest
+    strategy:
+      matrix:
+        build_name: ['AARCH64'] 
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: recursive
+
+      - name: Dependencies
+        run: |
+          apt update
+          apt install -y git curl ca-certificates nano zip unzip tar xz-utils cmake g++ make pkg-config libtool-bin autoconf automake build-essential cmake pkg-config pcsc-tools pcscd libpcsclite1 python-dev virtualenv libudev-dev libhidapi-dev libzmq3-dev libunbound-dev libboost-all-dev libusb-1.0-0-dev libusb-dev libssl-dev libsodium-dev libcurl4-openssl-dev libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libhidapi-libusb0 libnorm-dev libpgm-dev g++-aarch64-linux-gnu
+          
+      
+      - name: Build AARCH64
+        if: matrix.build_name == 'AARCH64'
+        run: |
+          rm -r contrib/depends
+          cd contrib 
+          cp -r /root/depends ./
+          cd ../
+          make depends target=aarch64-linux-gnu -j2
+  
+  armhf_build:
+    name: ${{ matrix.build_name }}
+    runs-on: ubuntu-18.04
+    container:
+      image: docker://amityproject/armhf:latest
+    strategy:
+      matrix:
+        build_name: ['ARMHF'] 
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: recursive
+
+      - name: Dependencies
+        run: |
+          apt update
+          apt install -y git curl ca-certificates nano zip unzip tar xz-utils cmake g++ make pkg-config libtool-bin autoconf automake build-essential cmake pkg-config pcsc-tools pcscd libpcsclite1 python-dev virtualenv libudev-dev libhidapi-dev libzmq3-dev libunbound-dev libboost-all-dev libusb-1.0-0-dev libusb-dev libssl-dev libsodium-dev libcurl4-openssl-dev libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libhidapi-libusb0 libnorm-dev libpgm-dev g++-aarch64-linux-gnu
+          
+      
+      - name: Build ARMHF
+        if: matrix.build_name == 'ARMHF'
+        run: |
+          rm -r contrib/depends
+          cd contrib 
+          cp -r /root/depends ./
+          cd ../
+          make depends target=arm-linux-gnueabihf -j2
+
+  win64_build:
+    name: ${{ matrix.build_name }}
+    runs-on: ubuntu-18.04
+    container:
+      image: docker://amityproject/win64:latest
+    strategy:
+      matrix:
+        build_name: ['WIN64'] 
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: recursive
+
+      - name: Dependencies
+        run: |
+          apt update
+          apt install -y git curl ca-certificates nano zip unzip tar xz-utils cmake g++ make pkg-config libtool-bin autoconf automake build-essential cmake pkg-config pcsc-tools pcscd libpcsclite1 python-dev virtualenv libudev-dev libhidapi-dev libzmq3-dev libunbound-dev libboost-all-dev libusb-1.0-0-dev libusb-dev libssl-dev libsodium-dev libcurl4-openssl-dev libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libhidapi-libusb0 libnorm-dev libpgm-dev g++-aarch64-linux-gnu
+          
+      
+      - name: Build WIN64
+        if: matrix.build_name == 'WIN64'
+        run: |
+          rm -r contrib/depends
+          cd contrib 
+          cp -r /root/depends ./
+          cd ../
+          make depends target=x86_64-w64-mingw32 -j2
+          
+  riscv64_build:
+    name: ${{ matrix.build_name }}
+    runs-on: ubuntu-18.04
+    container:
+      image: docker://amityproject/riscv64:latest
+    strategy:
+      matrix:
+        build_name: ['RISCV64'] 
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: recursive
+
+      - name: Dependencies
+        run: |
+          apt update
+          apt install -y git curl ca-certificates nano zip unzip tar xz-utils cmake g++ make pkg-config libtool-bin autoconf automake build-essential cmake pkg-config pcsc-tools pcscd libpcsclite1 python-dev virtualenv libudev-dev libhidapi-dev libzmq3-dev libunbound-dev libboost-all-dev libusb-1.0-0-dev libusb-dev libssl-dev libsodium-dev libcurl4-openssl-dev libminiupnpc-dev libunwind8-dev liblzma-dev libreadline6-dev libldns-dev libexpat1-dev libgtest-dev doxygen graphviz libhidapi-libusb0 libnorm-dev libpgm-dev g++-aarch64-linux-gnu
+          
+      
+      - name: Build RISCV64
+        if: matrix.build_name == 'RISCV64'
+        run: |
+          rm -r contrib/depends
+          cd contrib 
+          cp -r /root/depends ./
+          cd ../
+          make depends target=riscv64-linux-gnu -j2
+
+  macos_build:
+    name: ${{ matrix.build_name }}
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        build_name: ['MACOS'] 
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: recursive
+
+      - name: Dependencies
+        run: |
+          brew install jmuncaster/header-only/cppzmq
+          brew update && brew bundle --file=contrib/brew/Brewfile
+      
+      - name: Build MACOS
+        if: matrix.build_name == 'MACOS'
+        run: |
+          make release-static-mac-x86_64 -j2
+
+
+      
+      
+    
+  
