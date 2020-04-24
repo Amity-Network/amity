@@ -176,7 +176,7 @@ namespace cryptonote
       *
       * @return whether or not the block is too big
       */
-     bool check_incoming_block_size(const blobdata& block_blob) const;
+     bool check_incoming_block_weight(const blobdata& block_blob) const;
 
      /**
       * @brief get the cryptonote protocol instance

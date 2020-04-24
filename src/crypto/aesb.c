@@ -29,8 +29,8 @@ extern "C"
 #define TABLE_ALIGN     32
 #define WPOLY           0x011b
 #define N_COLS          4
-#define AES_BLOCK_SIZE  16
-#define RC_LENGTH       (5 * (AES_BLOCK_SIZE / 4 - 2))
+#define AES_block_weight  16
+#define RC_LENGTH       (5 * (AES_block_weight / 4 - 2))
 
 #if defined(_MSC_VER)
 #define LOCAL_ALIGN __declspec(align(TABLE_ALIGN))

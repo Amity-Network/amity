@@ -751,8 +751,8 @@ namespace cryptonote
       std::string nettype;
       std::string top_block_hash;
       uint64_t cumulative_difficulty;
-      uint64_t block_size_limit;
-      uint64_t block_size_median;
+      uint64_t block_weight_limit;
+      uint64_t block_weight_median;
       uint64_t free_space;
       bool offline;
       bool untrusted;
@@ -783,8 +783,8 @@ namespace cryptonote
         KV_SERIALIZE(nettype)
         KV_SERIALIZE(top_block_hash)
         KV_SERIALIZE(cumulative_difficulty)
-        KV_SERIALIZE(block_size_limit)
-        KV_SERIALIZE(block_size_median)
+        KV_SERIALIZE(block_weight_limit)
+        KV_SERIALIZE(block_weight_median)
         KV_SERIALIZE(free_space)
         KV_SERIALIZE(offline)
         KV_SERIALIZE(untrusted)
@@ -1059,7 +1059,7 @@ namespace cryptonote
       std::string hash;
       difficulty_type difficulty;
       uint64_t reward;
-      uint64_t block_size;
+      uint64_t block_weight;
       uint64_t num_txes;
       std::string miner_tx_hash;
       
@@ -1075,7 +1075,7 @@ namespace cryptonote
         KV_SERIALIZE(hash)
         KV_SERIALIZE(difficulty)
         KV_SERIALIZE(reward)
-        KV_SERIALIZE(block_size)
+        KV_SERIALIZE(block_weight)
         KV_SERIALIZE(num_txes)
         KV_SERIALIZE(miner_tx_hash)
       END_KV_SERIALIZE_MAP()

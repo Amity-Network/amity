@@ -180,14 +180,14 @@ namespace hw {
       remaining = result;
 
       while (remaining > 0) {
-        int block_size = (remaining > MAX_BLOCK ? MAX_BLOCK : remaining);
+        int block_weight = (remaining > MAX_BLOCK ? MAX_BLOCK : remaining);
         memset(padding_buffer, 0, sizeof(padding_buffer));
-        memcpy(padding_buffer+1, buffer + offset, block_size);
-        io_hid_log(0, padding_buffer, block_size+1);
-        hid_ret = hid_write(this->usb_device, padding_buffer, block_size+1);
+        memcpy(padding_buffer+1, buffer + offset, block_weight);
+        io_hid_log(0, padding_buffer, block_weight+1);
+        hid_ret = hid_write(this->usb_device, padding_buffer, block_weight+1);
         ASSERT_X(hid_ret>=0, "Unable to send hidapi command. Error "+std::to_string(result)+": "+ safe_hid_error(this->usb_device));
-        offset += block_size;
-        remaining -= block_size;
+        offset += block_weight;
+        remaining -= block_weight;
       }
 
       //get first response
@@ -234,7 +234,7 @@ namespace hw {
       unsigned int sequence_idx = 0;
       unsigned int offset = 0;
       unsigned int offset_out = 0;
-      unsigned int block_size;
+      unsigned int block_weight;
 
       ASSERT_X(this->packet_size >= 3, "Invalid Packet size: "+std::to_string(this->packet_size)) ;
       ASSERT_X(out_len >= 7,  "out_len too short: "+std::to_string(out_len));
@@ -248,12 +248,12 @@ namespace hw {
       sequence_idx++;
       out[offset_out++] = ((command_len >> 8) & 0xff);
       out[offset_out++] = (command_len & 0xff);
-      block_size = (command_len > this->packet_size - 7 ? this->packet_size - 7 : command_len);
-      ASSERT_X(out_len >= block_size,  "out_len too short: "+std::to_string(out_len));
-      out_len -= block_size;
-      memcpy(out + offset_out, command + offset, block_size);
-      offset_out += block_size;
-      offset += block_size;
+      block_weight = (command_len > this->packet_size - 7 ? this->packet_size - 7 : command_len);
+      ASSERT_X(out_len >= block_weight,  "out_len too short: "+std::to_string(out_len));
+      out_len -= block_weight;
+      memcpy(out + offset_out, command + offset, block_weight);
+      offset_out += block_weight;
+      offset += block_weight;
       while (offset != command_len) {
         ASSERT_X(out_len >= 5,  "out_len too short: "+std::to_string(out_len));
         out_len -= 5;
@@ -263,12 +263,12 @@ namespace hw {
         out[offset_out++] = ((sequence_idx >> 8) & 0xff);
         out[offset_out++] = (sequence_idx & 0xff);
         sequence_idx++;
-        block_size = ((command_len - offset) > this->packet_size - 5 ? this->packet_size - 5 : command_len - offset);
-        ASSERT_X(out_len >= block_size,  "out_len too short: "+std::to_string(out_len));
-        out_len -= block_size;
-        memcpy(out + offset_out, command + offset, block_size);
-        offset_out += block_size;
-        offset += block_size;
+        block_weight = ((command_len - offset) > this->packet_size - 5 ? this->packet_size - 5 : command_len - offset);
+        ASSERT_X(out_len >= block_weight,  "out_len too short: "+std::to_string(out_len));
+        out_len -= block_weight;
+        memcpy(out + offset_out, command + offset, block_weight);
+        offset_out += block_weight;
+        offset += block_weight;
       }
       while ((offset_out % this->packet_size) != 0) {
         ASSERT_X(out_len >= 1,  "out_len too short: "+std::to_string(out_len));
@@ -287,7 +287,7 @@ namespace hw {
       unsigned int offset = 0;
       unsigned int offset_out = 0;
       unsigned int response_len;
-      unsigned int block_size;
+      unsigned int block_weight;
       unsigned int val;
 
       //end?
@@ -313,10 +313,10 @@ namespace hw {
       if (data_len < (7 + response_len)) {
         return 0;
       }
-      block_size = (response_len > (this->packet_size - 7) ? this->packet_size - 7 : response_len);
-      memcpy(out + offset_out, data + offset, block_size);
-      offset += block_size;
-      offset_out += block_size;
+      block_weight = (response_len > (this->packet_size - 7) ? this->packet_size - 7 : response_len);
+      memcpy(out + offset_out, data + offset, block_weight);
+      offset += block_weight;
+      offset_out += block_weight;
       while (offset_out != response_len) {
         sequence_idx++;
         if (offset == data_len) {
@@ -332,13 +332,13 @@ namespace hw {
         offset += 2;
         ASSERT_X(val == sequence_idx, "Wrong sequence_idx");
 
-        block_size = ((response_len - offset_out) > this->packet_size - 5 ? this->packet_size - 5 : response_len - offset_out);
-        if (block_size > (data_len - offset)) {
+        block_weight = ((response_len - offset_out) > this->packet_size - 5 ? this->packet_size - 5 : response_len - offset_out);
+        if (block_weight > (data_len - offset)) {
           return 0;
         }
-        memcpy(out + offset_out, data + offset, block_size);
-        offset += block_size;
-        offset_out += block_size;
+        memcpy(out + offset_out, data + offset, block_weight);
+        offset += block_weight;
+        offset_out += block_weight;
       }
       return offset_out;
     }

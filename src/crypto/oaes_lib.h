@@ -53,7 +53,7 @@ extern "C" {
 #endif // WIN32
 
 #define OAES_VERSION "0.8.1"
-#define OAES_BLOCK_SIZE 16
+#define OAES_block_weight 16
 
 typedef void OAES_CTX;
 
@@ -83,13 +83,13 @@ typedef enum
 // enable ECB mode, disable CBC mode
 #define OAES_OPTION_ECB 1
 // enable CBC mode, disable ECB mode
-// value is optional, may pass uint8_t iv[OAES_BLOCK_SIZE] to specify
+// value is optional, may pass uint8_t iv[OAES_block_weight] to specify
 // the value of the initialization vector, iv
 #define OAES_OPTION_CBC 2
 
 #ifdef OAES_DEBUG
 typedef int ( * oaes_step_cb ) (
-		const uint8_t state[OAES_BLOCK_SIZE],
+		const uint8_t state[OAES_block_weight],
 		const char * step_name,
 		int step_count,
 		void * user_data );
@@ -124,7 +124,7 @@ typedef struct _oaes_ctx
 
   oaes_key * key;
   OAES_OPTION options;
-  uint8_t iv[OAES_BLOCK_SIZE];
+  uint8_t iv[OAES_block_weight];
 } oaes_ctx;
 /*
  * // usage:
