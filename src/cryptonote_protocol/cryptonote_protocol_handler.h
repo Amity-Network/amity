@@ -68,8 +68,8 @@ namespace cryptonote
 			void handler_request_blocks_history(std::list<crypto::hash>& ids); // before asking for list of objects, we can change the list still
 			void handler_response_blocks_now(size_t packet_size);
 			
-			virtual double get_avg_block_weight() = 0;
-			virtual double estimate_one_block_weight() noexcept; // for estimating size of blocks to download
+			virtual double get_avg_block_size() = 0;
+			virtual double estimate_one_block_size() noexcept; // for estimating size of blocks to download
 	};
 
   template<class t_core>
@@ -163,7 +163,7 @@ namespace cryptonote
     size_t m_block_download_max_size;
 
     boost::mutex m_buffer_mutex;
-    double get_avg_block_weight();
+    double get_avg_block_size();
     boost::circular_buffer<size_t> m_avg_buffer = boost::circular_buffer<size_t>(10);
 
     template<class t_parameter>

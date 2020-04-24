@@ -584,7 +584,7 @@ namespace cryptonote
      * the current block reward. It is expressed by kB.
      *
      * @param block_reward the current block reward
-     * @param median_block_weight the median blob's size in the past window
+     * @param median_block_size the median blob's size in the past window
      * @param version hard fork version for rules and constants to use
      *
      * @return the per kB fee
@@ -1234,7 +1234,7 @@ namespace cryptonote
      * and that his miner transaction totals reward + fee.
      *
      * @param b the block containing the miner transaction to be validated
-     * @param cumulative_block_weight the block's size
+     * @param cumulative_block_size the block's size
      * @param fee the total fees collected in the block
      * @param base_reward return-by-reference the new block's generated coins
      * @param already_generated_coins the amount of currency generated prior to this block
@@ -1243,7 +1243,7 @@ namespace cryptonote
      *
      * @return false if anything is found wrong with the miner transaction, otherwise true
      */
-    bool validate_miner_transaction(const block& b, size_t cumulative_block_weight, uint64_t fee, uint64_t& base_reward, uint64_t already_generated_coins, bool &partial_block_reward, uint8_t version);
+    bool validate_miner_transaction(const block& b, size_t cumulative_block_size, uint64_t fee, uint64_t& base_reward, uint64_t already_generated_coins, bool &partial_block_reward, uint8_t version);
 
     /**
      * @brief reverts the blockchain to its previous state following a failed switch

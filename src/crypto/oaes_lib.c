@@ -79,7 +79,7 @@
 #endif /* min */
 
 // "OAES<8-bit header version><8-bit type><16-bit options><8-bit flags><56-bit reserved>"
-static uint8_t oaes_header[OAES_block_weight] = {
+static uint8_t oaes_header[OAES_BLOCK_SIZE] = {
 	// 		0,    1,    2,    3,    4,    5,    6,    7,    8,    9,    a,    b,    c,    d,    e,    f,
 	/*0*/	0x4f, 0x41, 0x45, 0x53, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
@@ -306,9 +306,9 @@ static OAES_RET oaes_word_rot_left( uint8_t word[OAES_COL_LEN] )
 	return OAES_RET_SUCCESS;
 }
 
-static OAES_RET oaes_shift_rows( uint8_t block[OAES_block_weight] )
+static OAES_RET oaes_shift_rows( uint8_t block[OAES_BLOCK_SIZE] )
 {
-	uint8_t _temp[OAES_block_weight];
+	uint8_t _temp[OAES_BLOCK_SIZE];
 
 	if( NULL == block )
 		return OAES_RET_ARG1;
@@ -329,14 +329,14 @@ static OAES_RET oaes_shift_rows( uint8_t block[OAES_block_weight] )
 	_temp[0x0d] = block[0x01];
 	_temp[0x0e] = block[0x06];
 	_temp[0x0f] = block[0x0b];
-	memcpy( block, _temp, OAES_block_weight );
+	memcpy( block, _temp, OAES_BLOCK_SIZE );
 	
 	return OAES_RET_SUCCESS;
 }
 
-static OAES_RET oaes_inv_shift_rows( uint8_t block[OAES_block_weight] )
+static OAES_RET oaes_inv_shift_rows( uint8_t block[OAES_BLOCK_SIZE] )
 {
-	uint8_t _temp[OAES_block_weight];
+	uint8_t _temp[OAES_BLOCK_SIZE];
 
 	if( NULL == block )
 		return OAES_RET_ARG1;
@@ -357,7 +357,7 @@ static OAES_RET oaes_inv_shift_rows( uint8_t block[OAES_block_weight] )
 	_temp[0x0d] = block[0x09];
 	_temp[0x0e] = block[0x06];
 	_temp[0x0f] = block[0x03];
-	memcpy( block, _temp, OAES_block_weight );
+	memcpy( block, _temp, OAES_BLOCK_SIZE );
 	
 	return OAES_RET_SUCCESS;
 }
@@ -447,7 +447,7 @@ OAES_RET oaes_sprintf(
 		return OAES_RET_ARG2;
 
 	_buf_len_in = *buf_len;
-	*buf_len = data_len * 3 + data_len / OAES_block_weight + 1;
+	*buf_len = data_len * 3 + data_len / OAES_BLOCK_SIZE + 1;
 	
 	if( NULL == buf )
 		return OAES_RET_SUCCESS;
@@ -464,7 +464,7 @@ OAES_RET oaes_sprintf(
 	{
 		sprintf( _temp, "%02x ", data[_i] );
 		strcat( buf, _temp );
-		if( _i && 0 == ( _i + 1 ) % OAES_block_weight )
+		if( _i && 0 == ( _i + 1 ) % OAES_BLOCK_SIZE )
 			strcat( buf, "\n" );
 	}
 	
@@ -703,7 +703,7 @@ OAES_RET oaes_key_export( OAES_CTX * ctx,
 
 	_data_len_in = *data_len;
 	// data + header
-	*data_len = _ctx->key->data_len + OAES_block_weight;
+	*data_len = _ctx->key->data_len + OAES_BLOCK_SIZE;
 
 	if( NULL == data )
 		return OAES_RET_SUCCESS;
@@ -712,10 +712,10 @@ OAES_RET oaes_key_export( OAES_CTX * ctx,
 		return OAES_RET_BUF;
 	
 	// header
-	memcpy( data, oaes_header, OAES_block_weight );
+	memcpy( data, oaes_header, OAES_BLOCK_SIZE );
 	data[5] = 0x01;
 	data[7] = _ctx->key->data_len;
-	memcpy( data + OAES_block_weight, _ctx->key->data, _ctx->key->data_len );
+	memcpy( data + OAES_BLOCK_SIZE, _ctx->key->data, _ctx->key->data_len );
 	
 	return OAES_RET_SUCCESS;
 }
@@ -764,9 +764,9 @@ OAES_RET oaes_key_import( OAES_CTX * ctx,
 	
 	switch( data_len )
 	{
-		case 16 + OAES_block_weight:
-		case 24 + OAES_block_weight:
-		case 32 + OAES_block_weight:
+		case 16 + OAES_BLOCK_SIZE:
+		case 24 + OAES_BLOCK_SIZE:
+		case 32 + OAES_BLOCK_SIZE:
 			break;
 		default:
 			return OAES_RET_ARG3;
@@ -806,7 +806,7 @@ OAES_RET oaes_key_import( OAES_CTX * ctx,
 			return OAES_RET_HEADER;
 	}
 	
-	if( (int)data_len != _key_length + OAES_block_weight )
+	if( (int)data_len != _key_length + OAES_BLOCK_SIZE )
 			return OAES_RET_ARG3;
 	
 	if( _ctx->key )
@@ -827,7 +827,7 @@ OAES_RET oaes_key_import( OAES_CTX * ctx,
 		return OAES_RET_MEM;
 	}
 
-	memcpy( _ctx->key->data, data + OAES_block_weight, _key_length );
+	memcpy( _ctx->key->data, data + OAES_BLOCK_SIZE, _key_length );
 	_rc = _rc || oaes_key_expand( ctx );
 	
 	if( _rc != OAES_RET_SUCCESS )
@@ -971,16 +971,16 @@ OAES_RET oaes_set_option( OAES_CTX * ctx,
 	{
 		case OAES_OPTION_ECB:
 			_ctx->options &= ~OAES_OPTION_CBC;
-			memset( _ctx->iv, 0, OAES_block_weight );
+			memset( _ctx->iv, 0, OAES_BLOCK_SIZE );
 			break;
 
 		case OAES_OPTION_CBC:
 			_ctx->options &= ~OAES_OPTION_ECB;
 			if( value )
-				memcpy( _ctx->iv, value, OAES_block_weight );
+				memcpy( _ctx->iv, value, OAES_BLOCK_SIZE );
 			else
 			{
-				for( _i = 0; _i < OAES_block_weight; _i++ )
+				for( _i = 0; _i < OAES_BLOCK_SIZE; _i++ )
 #ifdef OAES_HAVE_ISAAC
 					_ctx->iv[_i] = (uint8_t) rand( _ctx->rctx );
 #else
@@ -1034,7 +1034,7 @@ static OAES_RET oaes_encrypt_block(
 	if( NULL == c )
 		return OAES_RET_ARG2;
 	
-	if( c_len != OAES_block_weight )
+	if( c_len != OAES_BLOCK_SIZE )
 		return OAES_RET_ARG3;
 	
 	if( NULL == _ctx->key )
@@ -1151,7 +1151,7 @@ static OAES_RET oaes_decrypt_block(
 	if( NULL == c )
 		return OAES_RET_ARG2;
 	
-	if( c_len != OAES_block_weight )
+	if( c_len != OAES_BLOCK_SIZE )
 		return OAES_RET_ARG3;
 	
 	if( NULL == _ctx->key )
@@ -1259,8 +1259,8 @@ OAES_RET oaes_encrypt( OAES_CTX * ctx,
 		const uint8_t * m, size_t m_len, uint8_t * c, size_t * c_len )
 {
 	size_t _i, _j, _c_len_in, _c_data_len;
-	size_t _pad_len = m_len % OAES_block_weight == 0 ?
-			0 : OAES_block_weight - m_len % OAES_block_weight;
+	size_t _pad_len = m_len % OAES_BLOCK_SIZE == 0 ?
+			0 : OAES_BLOCK_SIZE - m_len % OAES_BLOCK_SIZE;
 	oaes_ctx * _ctx = (oaes_ctx *) ctx;
 	OAES_RET _rc = OAES_RET_SUCCESS;
 	uint8_t _flags = _pad_len ? OAES_FLAG_PAD : 0;
@@ -1278,7 +1278,7 @@ OAES_RET oaes_encrypt( OAES_CTX * ctx,
 	// data + pad
 	_c_data_len = m_len + _pad_len;
 	// header + iv + data + pad
-	*c_len = 2 * OAES_block_weight + m_len + _pad_len;
+	*c_len = 2 * OAES_BLOCK_SIZE + m_len + _pad_len;
 
 	if( NULL == c )
 		return OAES_RET_SUCCESS;
@@ -1290,38 +1290,38 @@ OAES_RET oaes_encrypt( OAES_CTX * ctx,
 		return OAES_RET_NOKEY;
 	
 	// header
-	memcpy(c, oaes_header, OAES_block_weight );
+	memcpy(c, oaes_header, OAES_BLOCK_SIZE );
 	memcpy(c + 6, &_ctx->options, sizeof(_ctx->options));
 	memcpy(c + 8, &_flags, sizeof(_flags));
 	// iv
-	memcpy(c + OAES_block_weight, _ctx->iv, OAES_block_weight );
+	memcpy(c + OAES_BLOCK_SIZE, _ctx->iv, OAES_BLOCK_SIZE );
 	// data
-	memcpy(c + 2 * OAES_block_weight, m, m_len );
+	memcpy(c + 2 * OAES_BLOCK_SIZE, m, m_len );
 	
-	for( _i = 0; _i < _c_data_len; _i += OAES_block_weight )
+	for( _i = 0; _i < _c_data_len; _i += OAES_BLOCK_SIZE )
 	{
-		uint8_t _block[OAES_block_weight];
-		size_t _block_weight = min( m_len - _i, OAES_block_weight );
+		uint8_t _block[OAES_BLOCK_SIZE];
+		size_t _block_size = min( m_len - _i, OAES_BLOCK_SIZE );
 
-		memcpy( _block, c + 2 * OAES_block_weight + _i, _block_weight );
+		memcpy( _block, c + 2 * OAES_BLOCK_SIZE + _i, _block_size );
 		
 		// insert pad
-		for( _j = 0; _j < OAES_block_weight - _block_weight; _j++ )
-			_block[ _block_weight + _j ] = _j + 1;
+		for( _j = 0; _j < OAES_BLOCK_SIZE - _block_size; _j++ )
+			_block[ _block_size + _j ] = _j + 1;
 	
 		// CBC
 		if( _ctx->options & OAES_OPTION_CBC )
 		{
-			for( _j = 0; _j < OAES_block_weight; _j++ )
+			for( _j = 0; _j < OAES_BLOCK_SIZE; _j++ )
 				_block[_j] = _block[_j] ^ _ctx->iv[_j];
 		}
 
 		_rc = _rc ||
-				oaes_encrypt_block( ctx, _block, OAES_block_weight );
-		memcpy( c + 2 * OAES_block_weight + _i, _block, OAES_block_weight );
+				oaes_encrypt_block( ctx, _block, OAES_BLOCK_SIZE );
+		memcpy( c + 2 * OAES_BLOCK_SIZE + _i, _block, OAES_BLOCK_SIZE );
 		
 		if( _ctx->options & OAES_OPTION_CBC )
-			memcpy( _ctx->iv, _block, OAES_block_weight );
+			memcpy( _ctx->iv, _block, OAES_BLOCK_SIZE );
 	}
 	
 	return _rc;
@@ -1333,7 +1333,7 @@ OAES_RET oaes_decrypt( OAES_CTX * ctx,
 	size_t _i, _j, _m_len_in;
 	oaes_ctx * _ctx = (oaes_ctx *) ctx;
 	OAES_RET _rc = OAES_RET_SUCCESS;
-	uint8_t _iv[OAES_block_weight];
+	uint8_t _iv[OAES_BLOCK_SIZE];
 	uint8_t _flags;
 	OAES_OPTION _options;
 	
@@ -1343,14 +1343,14 @@ OAES_RET oaes_decrypt( OAES_CTX * ctx,
 	if( NULL == c )
 		return OAES_RET_ARG2;
 	
-	if( c_len % OAES_block_weight )
+	if( c_len % OAES_BLOCK_SIZE )
 		return OAES_RET_ARG3;
 	
 	if( NULL == m_len )
 		return OAES_RET_ARG5;
 	
 	_m_len_in = *m_len;
-	*m_len = c_len - 2 * OAES_block_weight;
+	*m_len = c_len - 2 * OAES_BLOCK_SIZE;
 	
 	if( NULL == m )
 		return OAES_RET_SUCCESS;
@@ -1410,22 +1410,22 @@ OAES_RET oaes_decrypt( OAES_CTX * ctx,
 		return OAES_RET_HEADER;
 
 	// iv
-	memcpy( _iv, c + OAES_block_weight, OAES_block_weight);
+	memcpy( _iv, c + OAES_BLOCK_SIZE, OAES_BLOCK_SIZE);
 	// data + pad
-	memcpy( m, c + 2 * OAES_block_weight, *m_len );
+	memcpy( m, c + 2 * OAES_BLOCK_SIZE, *m_len );
 	
-	for( _i = 0; _i < *m_len; _i += OAES_block_weight )
+	for( _i = 0; _i < *m_len; _i += OAES_BLOCK_SIZE )
 	{
 		if( ( _options & OAES_OPTION_CBC ) && _i > 0 )
-			memcpy( _iv, c + OAES_block_weight + _i, OAES_block_weight );
+			memcpy( _iv, c + OAES_BLOCK_SIZE + _i, OAES_BLOCK_SIZE );
 		
 		_rc = _rc ||
-				oaes_decrypt_block( ctx, m + _i, min( *m_len - _i, OAES_block_weight ) );
+				oaes_decrypt_block( ctx, m + _i, min( *m_len - _i, OAES_BLOCK_SIZE ) );
 		
 		// CBC
 		if( _options & OAES_OPTION_CBC )
 		{
-			for( _j = 0; _j < OAES_block_weight; _j++ )
+			for( _j = 0; _j < OAES_BLOCK_SIZE; _j++ )
 				m[ _i + _j ] = m[ _i + _j ] ^ _iv[_j];
 		}
 	}
@@ -1465,7 +1465,7 @@ OAES_API OAES_RET oaes_encryption_round( const uint8_t * key, uint8_t * c )
     return OAES_RET_ARG2;
 
   // SubBytes(state)
-  for( _i = 0; _i < OAES_block_weight; _i++ )
+  for( _i = 0; _i < OAES_BLOCK_SIZE; _i++ )
     oaes_sub_byte( c + _i );
 
   // ShiftRows(state)
@@ -1478,7 +1478,7 @@ OAES_API OAES_RET oaes_encryption_round( const uint8_t * key, uint8_t * c )
   oaes_mix_cols( c + 12 );
 
   // AddRoundKey(State, key)
-  for( _i = 0; _i < OAES_block_weight; _i++ )
+  for( _i = 0; _i < OAES_BLOCK_SIZE; _i++ )
     c[_i] ^= key[_i];
 
   return OAES_RET_SUCCESS;

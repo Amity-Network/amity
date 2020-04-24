@@ -46,9 +46,9 @@ namespace tools
     {
       const char alphabet[] = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
       const size_t alphabet_size = sizeof(alphabet) - 1;
-      const size_t encoded_block_weights[] = {0, 2, 3, 5, 6, 7, 9, 10, 11};
-      const size_t full_block_weight = sizeof(encoded_block_weights) / sizeof(encoded_block_weights[0]) - 1;
-      const size_t full_encoded_block_weight = encoded_block_weights[full_block_weight];
+      const size_t encoded_block_sizes[] = {0, 2, 3, 5, 6, 7, 9, 10, 11};
+      const size_t full_block_size = sizeof(encoded_block_sizes) / sizeof(encoded_block_sizes[0]) - 1;
+      const size_t full_encoded_block_size = encoded_block_sizes[full_block_size];
       const size_t addr_checksum_size = 4;
 
       struct reverse_alphabet
@@ -78,30 +78,30 @@ namespace tools
 
       reverse_alphabet reverse_alphabet::instance;
 
-      struct decoded_block_weights
+      struct decoded_block_sizes
       {
-        decoded_block_weights()
+        decoded_block_sizes()
         {
-          m_data.resize(encoded_block_weights[full_block_weight] + 1, -1);
-          for (size_t i = 0; i <= full_block_weight; ++i)
+          m_data.resize(encoded_block_sizes[full_block_size] + 1, -1);
+          for (size_t i = 0; i <= full_block_size; ++i)
           {
-            m_data[encoded_block_weights[i]] = static_cast<int>(i);
+            m_data[encoded_block_sizes[i]] = static_cast<int>(i);
           }
         }
 
-        int operator()(size_t encoded_block_weight) const
+        int operator()(size_t encoded_block_size) const
         {
-          assert(encoded_block_weight <= full_encoded_block_weight);
-          return m_data[encoded_block_weight];
+          assert(encoded_block_size <= full_encoded_block_size);
+          return m_data[encoded_block_size];
         }
 
-        static decoded_block_weights instance;
+        static decoded_block_sizes instance;
 
       private:
         std::vector<int> m_data;
       };
 
-      decoded_block_weights decoded_block_weights::instance;
+      decoded_block_sizes decoded_block_sizes::instance;
 
       uint64_t uint_8be_to_64(const uint8_t* data, size_t size)
       {
@@ -122,10 +122,10 @@ namespace tools
 
       void encode_block(const char* block, size_t size, char* res)
       {
-        assert(1 <= size && size <= full_block_weight);
+        assert(1 <= size && size <= full_block_size);
 
         uint64_t num = uint_8be_to_64(reinterpret_cast<const uint8_t*>(block), size);
-        int i = static_cast<int>(encoded_block_weights[size]) - 1;
+        int i = static_cast<int>(encoded_block_sizes[size]) - 1;
         while (0 < num)
         {
           uint64_t remainder = num % alphabet_size;
@@ -137,9 +137,9 @@ namespace tools
 
       bool decode_block(const char* block, size_t size, char* res)
       {
-        assert(1 <= size && size <= full_encoded_block_weight);
+        assert(1 <= size && size <= full_encoded_block_size);
 
-        int res_size = decoded_block_weights::instance(size);
+        int res_size = decoded_block_sizes::instance(size);
         if (res_size <= 0)
           return false; // Invalid block size
 
@@ -160,7 +160,7 @@ namespace tools
           order *= alphabet_size; // Never overflows, 58^10 < 2^64
         }
 
-        if (static_cast<size_t>(res_size) < full_block_weight && (UINT64_C(1) << (8 * res_size)) <= res_num)
+        if (static_cast<size_t>(res_size) < full_block_size && (UINT64_C(1) << (8 * res_size)) <= res_num)
           return false; // Overflow
 
         uint_64_to_8be(res_num, res_size, reinterpret_cast<uint8_t*>(res));
@@ -174,19 +174,19 @@ namespace tools
       if (data.empty())
         return std::string();
 
-      size_t full_block_count = data.size() / full_block_weight;
-      size_t last_block_weight = data.size() % full_block_weight;
-      size_t res_size = full_block_count * full_encoded_block_weight + encoded_block_weights[last_block_weight];
+      size_t full_block_count = data.size() / full_block_size;
+      size_t last_block_size = data.size() % full_block_size;
+      size_t res_size = full_block_count * full_encoded_block_size + encoded_block_sizes[last_block_size];
 
       std::string res(res_size, alphabet[0]);
       for (size_t i = 0; i < full_block_count; ++i)
       {
-        encode_block(data.data() + i * full_block_weight, full_block_weight, &res[i * full_encoded_block_weight]);
+        encode_block(data.data() + i * full_block_size, full_block_size, &res[i * full_encoded_block_size]);
       }
 
-      if (0 < last_block_weight)
+      if (0 < last_block_size)
       {
-        encode_block(data.data() + full_block_count * full_block_weight, last_block_weight, &res[full_block_count * full_encoded_block_weight]);
+        encode_block(data.data() + full_block_count * full_block_size, last_block_size, &res[full_block_count * full_encoded_block_size]);
       }
 
       return res;
@@ -200,24 +200,24 @@ namespace tools
         return true;
       }
 
-      size_t full_block_count = enc.size() / full_encoded_block_weight;
-      size_t last_block_weight = enc.size() % full_encoded_block_weight;
-      int last_block_decoded_size = decoded_block_weights::instance(last_block_weight);
+      size_t full_block_count = enc.size() / full_encoded_block_size;
+      size_t last_block_size = enc.size() % full_encoded_block_size;
+      int last_block_decoded_size = decoded_block_sizes::instance(last_block_size);
       if (last_block_decoded_size < 0)
         return false; // Invalid enc length
-      size_t data_size = full_block_count * full_block_weight + last_block_decoded_size;
+      size_t data_size = full_block_count * full_block_size + last_block_decoded_size;
 
       data.resize(data_size, 0);
       for (size_t i = 0; i < full_block_count; ++i)
       {
-        if (!decode_block(enc.data() + i * full_encoded_block_weight, full_encoded_block_weight, &data[i * full_block_weight]))
+        if (!decode_block(enc.data() + i * full_encoded_block_size, full_encoded_block_size, &data[i * full_block_size]))
           return false;
       }
 
-      if (0 < last_block_weight)
+      if (0 < last_block_size)
       {
-        if (!decode_block(enc.data() + full_block_count * full_encoded_block_weight, last_block_weight,
-          &data[full_block_count * full_block_weight]))
+        if (!decode_block(enc.data() + full_block_count * full_encoded_block_size, last_block_size,
+          &data[full_block_count * full_block_size]))
           return false;
       }
 

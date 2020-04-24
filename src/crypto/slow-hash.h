@@ -44,7 +44,7 @@
 #include "int-util.h"
 #include "oaes_lib.h"
 
-#define AES_block_weight 16
+#define AES_BLOCK_SIZE 16
 #define AES_KEY_SIZE 32
 #define INIT_SIZE_BLK 8
 extern void aesb_single_round(const uint8_t *in, uint8_t *out, const uint8_t *expandedKey);
@@ -191,7 +191,7 @@ BOOL SetLockPagesPrivilege(HANDLE hProcess, BOOL bEnable)
 #define U64(x) ((uint64_t *)(x))
 #define R128(x) ((__m128i *)(x))
 
-#define state_index(x) (((*((uint64_t *)x) >> 4) & ((CN_SCRATCHPAD_MEMORY / AES_block_weight) - 1)) << 4)
+#define state_index(x) (((*((uint64_t *)x) >> 4) & ((CN_SCRATCHPAD_MEMORY / AES_BLOCK_SIZE) - 1)) << 4)
 #if defined(_MSC_VER)
   #if !defined(_WIN64)
     #define __mul() lo = mul128(c[0], b[0], &hi);
@@ -253,7 +253,7 @@ BOOL SetLockPagesPrivilege(HANDLE hProcess, BOOL bEnable)
     _b = _c;
 
 #define init_hash()                                                             \
-    uint32_t init_size_byte = (init_size_blk * AES_block_weight);                 \
+    uint32_t init_size_byte = (init_size_blk * AES_BLOCK_SIZE);                 \
     RDATA_ALIGN16 uint8_t expandedKey[240];                                     \
     uint8_t *text = (uint8_t *)malloc(init_size_byte);                          \
     RDATA_ALIGN16 uint64_t a[2];                                                \
@@ -382,7 +382,7 @@ STATIC INLINE void aes_pseudo_round(const uint8_t *in, uint8_t *out, const uint8
 
     for (i = 0; i < nblocks; i++)
     {
-        d = _mm_loadu_si128(R128(in + i * AES_block_weight));
+        d = _mm_loadu_si128(R128(in + i * AES_BLOCK_SIZE));
         d = _mm_aesenc_si128(d, *R128(&k[0]));
         d = _mm_aesenc_si128(d, *R128(&k[1]));
         d = _mm_aesenc_si128(d, *R128(&k[2]));
@@ -393,7 +393,7 @@ STATIC INLINE void aes_pseudo_round(const uint8_t *in, uint8_t *out, const uint8
         d = _mm_aesenc_si128(d, *R128(&k[7]));
         d = _mm_aesenc_si128(d, *R128(&k[8]));
         d = _mm_aesenc_si128(d, *R128(&k[9]));
-        _mm_storeu_si128((R128(out + i * AES_block_weight)), d);
+        _mm_storeu_si128((R128(out + i * AES_BLOCK_SIZE)), d);
     }
 }
 
@@ -406,7 +406,7 @@ STATIC INLINE void aes_pseudo_round_xor(const uint8_t *in, uint8_t *out, const u
 
     for (i = 0; i < nblocks; i++)
     {
-        d = _mm_loadu_si128(R128(in + i * AES_block_weight));
+        d = _mm_loadu_si128(R128(in + i * AES_BLOCK_SIZE));
         d = _mm_xor_si128(d, *R128(x++));
         d = _mm_aesenc_si128(d, *R128(&k[0]));
         d = _mm_aesenc_si128(d, *R128(&k[1]));
@@ -418,7 +418,7 @@ STATIC INLINE void aes_pseudo_round_xor(const uint8_t *in, uint8_t *out, const u
         d = _mm_aesenc_si128(d, *R128(&k[7]));
         d = _mm_aesenc_si128(d, *R128(&k[8]));
         d = _mm_aesenc_si128(d, *R128(&k[9]));
-        _mm_storeu_si128((R128(out + i * AES_block_weight)), d);
+        _mm_storeu_si128((R128(out + i * AES_BLOCK_SIZE)), d);
     }
 }
 
@@ -426,7 +426,7 @@ STATIC INLINE void aes_pseudo_round_xor(const uint8_t *in, uint8_t *out, const u
 
 #define CN_USE_SOFTWARE_AES 1
 
-STATIC size_t e2i(const uint8_t *a, size_t count) { return (*((uint64_t *)a) / AES_block_weight) & (count - 1); }
+STATIC size_t e2i(const uint8_t *a, size_t count) { return (*((uint64_t *)a) / AES_BLOCK_SIZE) & (count - 1); }
 
 STATIC void mul(const uint8_t *a, const uint8_t *b, uint8_t *res)
 {
@@ -458,7 +458,7 @@ STATIC void sum_half_blocks(uint8_t *a, const uint8_t *b)
 
 STATIC void copy_block(uint8_t *dst, const uint8_t *src)
 {
-    memcpy(dst, src, AES_block_weight);
+    memcpy(dst, src, AES_BLOCK_SIZE);
 }
 
 STATIC void swap_blocks(uint8_t *a, uint8_t *b)
@@ -475,7 +475,7 @@ STATIC void swap_blocks(uint8_t *a, uint8_t *b)
 STATIC void xor_blocks(uint8_t *a, const uint8_t *b)
 {
     size_t i;
-    for (i = 0; i < AES_block_weight; i++)
+    for (i = 0; i < AES_BLOCK_SIZE; i++)
         a[i] ^= b[i];
 }
 
@@ -487,13 +487,13 @@ STATIC void xor64(uint8_t *left, const uint8_t *right)
 }
 
 #define aes_sw_variant()                                   \
-    j = e2i(a, CN_SCRATCHPAD_MEMORY / AES_block_weight) * AES_block_weight;  \
+    j = e2i(a, CN_SCRATCHPAD_MEMORY / AES_BLOCK_SIZE) * AES_BLOCK_SIZE;  \
     copy_block(c1, &hp_state[j]);                          \
     aesb_single_round(c1, c1, a);                          \
     copy_block(&hp_state[j], c1);                          \
     xor_blocks(&hp_state[j], b);                           \
     VARIANT1_1(&hp_state[j]);                              \
-    j = e2i(c1, CN_SCRATCHPAD_MEMORY / AES_block_weight) * AES_block_weight; \
+    j = e2i(c1, CN_SCRATCHPAD_MEMORY / AES_BLOCK_SIZE) * AES_BLOCK_SIZE; \
     copy_block(c2, &hp_state[j]);                          \
     mul(c1, c2, d);                                        \
     swap_blocks(a, c1);                                    \
@@ -506,12 +506,12 @@ STATIC void xor64(uint8_t *left, const uint8_t *right)
     copy_block(a, c1);
 
 #define aes_sw_novariant()                                 \
-    j = e2i(a, CN_SCRATCHPAD_MEMORY / AES_block_weight) * AES_block_weight;  \
+    j = e2i(a, CN_SCRATCHPAD_MEMORY / AES_BLOCK_SIZE) * AES_BLOCK_SIZE;  \
     copy_block(c1, &hp_state[j]);                          \
     aesb_single_round(c1, c1, a);                          \
     copy_block(&hp_state[j], c1);                          \
     xor_blocks(&hp_state[j], b);                           \
-    j = e2i(c1, CN_SCRATCHPAD_MEMORY / AES_block_weight) * AES_block_weight; \
+    j = e2i(c1, CN_SCRATCHPAD_MEMORY / AES_BLOCK_SIZE) * AES_BLOCK_SIZE; \
     copy_block(c2, &hp_state[j]);                          \
     mul(c1, c2, d);                                        \
     swap_blocks(a, c1);                                    \
@@ -524,13 +524,13 @@ STATIC void xor64(uint8_t *left, const uint8_t *right)
 
 #define init_hash()                                                                                          \
     union cn_slow_hash_state state;                                                                          \
-    uint32_t init_size_byte = (init_size_blk * AES_block_weight);                                              \
+    uint32_t init_size_byte = (init_size_blk * AES_BLOCK_SIZE);                                              \
     uint8_t *text = (uint8_t *)malloc(init_size_byte);                                                       \
-    uint8_t a[AES_block_weight];                                                                               \
-    uint8_t b[AES_block_weight];                                                                               \
-    uint8_t c1[AES_block_weight];                                                                              \
-    uint8_t c2[AES_block_weight];                                                                              \
-    uint8_t d[AES_block_weight];                                                                               \
+    uint8_t a[AES_BLOCK_SIZE];                                                                               \
+    uint8_t b[AES_BLOCK_SIZE];                                                                               \
+    uint8_t c1[AES_BLOCK_SIZE];                                                                              \
+    uint8_t c2[AES_BLOCK_SIZE];                                                                              \
+    uint8_t d[AES_BLOCK_SIZE];                                                                               \
     size_t i, j;                                                                                             \
     uint8_t aes_key[AES_KEY_SIZE];                                                                           \
     oaes_ctx * const aes_ctx = (oaes_ctx *)context->oaes_ctx;                                                \
@@ -549,7 +549,7 @@ STATIC void xor64(uint8_t *left, const uint8_t *right)
     {                                                                                                        \
         for (j = 0; j < init_size_blk; j++)                                                                  \
         {                                                                                                    \
-            aesb_pseudo_round(&text[AES_block_weight * j], &text[AES_block_weight * j], aes_ctx->key->exp_data); \
+            aesb_pseudo_round(&text[AES_BLOCK_SIZE * j], &text[AES_BLOCK_SIZE * j], aes_ctx->key->exp_data); \
         }                                                                                                    \
         memcpy(&hp_state[i * init_size_byte], text, init_size_byte);                                         \
     }
@@ -561,8 +561,8 @@ STATIC void xor64(uint8_t *left, const uint8_t *right)
     {                                                                                                        \
         for (j = 0; j < init_size_blk; j++)                                                                  \
         {                                                                                                    \
-            xor_blocks(&text[j * AES_block_weight], &hp_state[i * init_size_byte + j * AES_block_weight]);       \
-            aesb_pseudo_round(&text[AES_block_weight * j], &text[AES_block_weight * j], aes_ctx->key->exp_data); \
+            xor_blocks(&text[j * AES_BLOCK_SIZE], &hp_state[i * init_size_byte + j * AES_BLOCK_SIZE]);       \
+            aesb_pseudo_round(&text[AES_BLOCK_SIZE * j], &text[AES_BLOCK_SIZE * j], aes_ctx->key->exp_data); \
         }                                                                                                    \
     }                                                                                                        \
     memcpy(state.init, text, init_size_byte);                                                                \
@@ -571,10 +571,10 @@ STATIC void xor64(uint8_t *left, const uint8_t *right)
     free(text);                                                                                              
 
 #define xor_u64()                                                             \
-    for (i = 0; i < AES_block_weight; i++)                                      \
+    for (i = 0; i < AES_BLOCK_SIZE; i++)                                      \
     {                                                                         \
-        a[i] = state.k[i] ^ state.k[AES_block_weight * 2 + i];                  \
-        b[i] = state.k[AES_block_weight + i] ^ state.k[AES_block_weight * 3 + i]; \
+        a[i] = state.k[i] ^ state.k[AES_BLOCK_SIZE * 2 + i];                  \
+        b[i] = state.k[AES_BLOCK_SIZE + i] ^ state.k[AES_BLOCK_SIZE * 3 + i]; \
     }
 
 #endif // !defined(NO_AES) && (defined(__x86_64__) || (defined(_MSC_VER) && defined(_WIN64)))

@@ -186,7 +186,7 @@ namespace rpc
     std::string nettype;
     crypto::hash top_block_hash;
     uint64_t cumulative_difficulty;
-    uint64_t block_weight_limit;
+    uint64_t block_size_limit;
     std::string version;
   };
 

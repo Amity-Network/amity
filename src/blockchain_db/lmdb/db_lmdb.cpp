@@ -610,7 +610,7 @@ uint64_t BlockchainLMDB::get_estimated_batch_size(uint64_t batch_num_blocks, uin
   float db_expand_factor = 4.5f;
   uint64_t num_prev_blocks = 500;
   // For resizing purposes, allow for at least 4k average block size.
-  uint64_t min_block_weight = 4 * 1024;
+  uint64_t min_block_size = 4 * 1024;
 
   uint64_t block_stop = 0;
   uint64_t m_height = height();
@@ -620,12 +620,12 @@ uint64_t BlockchainLMDB::get_estimated_batch_size(uint64_t batch_num_blocks, uin
   if (block_stop >= num_prev_blocks)
     block_start = block_stop - num_prev_blocks + 1;
   uint32_t num_blocks_used = 0;
-  uint64_t total_block_weight = 0;
+  uint64_t total_block_size = 0;
   MDEBUG("[" << __func__ << "] " << "m_height: " << m_height << "  block_start: " << block_start << "  block_stop: " << block_stop);
-  size_t avg_block_weight = 0;
+  size_t avg_block_size = 0;
   if (batch_bytes)
   {
-    avg_block_weight = batch_bytes / batch_num_blocks;
+    avg_block_size = batch_bytes / batch_num_blocks;
     goto estim;
   }
   if (m_height == 0)
@@ -634,8 +634,8 @@ uint64_t BlockchainLMDB::get_estimated_batch_size(uint64_t batch_num_blocks, uin
   }
   else if (m_cum_count >= num_prev_blocks)
   {
-    avg_block_weight = m_cum_size / m_cum_count;
-    MDEBUG("average block size across recent " << m_cum_count << " blocks: " << avg_block_weight);
+    avg_block_size = m_cum_size / m_cum_count;
+    MDEBUG("average block size across recent " << m_cum_count << " blocks: " << avg_block_size);
     m_cum_size = 0;
     m_cum_count = 0;
   }
@@ -646,29 +646,29 @@ uint64_t BlockchainLMDB::get_estimated_batch_size(uint64_t batch_num_blocks, uin
     bool my_rtxn = block_rtxn_start(&rtxn, &rcurs);
     for (uint64_t block_num = block_start; block_num <= block_stop; ++block_num)
     {
-      uint32_t block_weight = get_block_weight(block_num);
-      total_block_weight += block_weight;
+      uint32_t block_size = get_block_size(block_num);
+      total_block_size += block_size;
       // Track number of blocks being totalled here instead of assuming, in case
       // some blocks were to be skipped for being outliers.
       ++num_blocks_used;
     }
     if (my_rtxn) block_rtxn_stop();
-    avg_block_weight = total_block_weight / (num_blocks_used ? num_blocks_used : 1);
-    MDEBUG("average block size across recent " << num_blocks_used << " blocks: " << avg_block_weight);
+    avg_block_size = total_block_size / (num_blocks_used ? num_blocks_used : 1);
+    MDEBUG("average block size across recent " << num_blocks_used << " blocks: " << avg_block_size);
   }
 estim:
-  if (avg_block_weight < min_block_weight)
-    avg_block_weight = min_block_weight;
-  MDEBUG("estimated average block size for batch: " << avg_block_weight);
+  if (avg_block_size < min_block_size)
+    avg_block_size = min_block_size;
+  MDEBUG("estimated average block size for batch: " << avg_block_size);
 
   // bigger safety margin on smaller block sizes
   if (batch_fudge_factor < 5000.0)
     batch_fudge_factor = 5000.0;
-  threshold_size = avg_block_weight * db_expand_factor * batch_fudge_factor;
+  threshold_size = avg_block_size * db_expand_factor * batch_fudge_factor;
   return threshold_size;
 }
 
-void BlockchainLMDB::add_block(const block& blk, size_t block_weight, const difficulty_type& cumulative_difficulty, const uint64_t& coins_generated, const crypto::hash& blk_hash)
+void BlockchainLMDB::add_block(const block& blk, size_t block_size, const difficulty_type& cumulative_difficulty, const uint64_t& coins_generated, const crypto::hash& blk_hash)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -714,7 +714,7 @@ void BlockchainLMDB::add_block(const block& blk, size_t block_weight, const diff
   bi.bi_height = m_height;
   bi.bi_timestamp = blk.timestamp;
   bi.bi_coins = coins_generated;
-  bi.bi_size = block_weight;
+  bi.bi_size = block_size;
   bi.bi_diff = cumulative_difficulty;
   bi.bi_hash = blk_hash;
 
@@ -727,7 +727,7 @@ void BlockchainLMDB::add_block(const block& blk, size_t block_weight, const diff
   if (result)
     throw0(DB_ERROR(lmdb_error("Failed to add block height by hash to db transaction: ", result).c_str()));
 
-  m_cum_size += block_weight;
+  m_cum_size += block_size;
   m_cum_count++;
 }
 
@@ -2163,7 +2163,7 @@ std::vector<uint64_t> BlockchainLMDB::get_block_cumulative_rct_outputs(const std
   return res;
 }
 
-size_t BlockchainLMDB::get_block_weight(const uint64_t& height) const
+size_t BlockchainLMDB::get_block_size(const uint64_t& height) const
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
   check_open();
@@ -3179,7 +3179,7 @@ void BlockchainLMDB::block_rtxn_abort() const
 }
     // This would probably mean an earlier exception was caught, but then we
     // proceeded further than we should have.
-uint64_t BlockchainLMDB::add_block(const std::pair<block, blobdata>& blk, size_t block_weight, const difficulty_type& cumulative_difficulty, const uint64_t& coins_generated,
+uint64_t BlockchainLMDB::add_block(const std::pair<block, blobdata>& blk, size_t block_size, const difficulty_type& cumulative_difficulty, const uint64_t& coins_generated,
     const std::vector<std::pair<transaction, blobdata>>& txs)
 {
   LOG_PRINT_L3("BlockchainLMDB::" << __func__);
@@ -3198,7 +3198,7 @@ uint64_t BlockchainLMDB::add_block(const std::pair<block, blobdata>& blk, size_t
 
   try
   {
-    BlockchainDB::add_block(blk, block_weight, cumulative_difficulty, coins_generated, txs);
+    BlockchainDB::add_block(blk, block_size, cumulative_difficulty, coins_generated, txs);
   }
   catch (const DB_ERROR_TXN_START& e)
   {

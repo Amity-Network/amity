@@ -79,13 +79,13 @@ class cryptonote_protocol_handler_base_pimpl { // placeholer if needed
 
 namespace cryptonote { 
 
-double cryptonote_protocol_handler_base::estimate_one_block_weight() noexcept { // for estimating size of blocks to downloa
+double cryptonote_protocol_handler_base::estimate_one_block_size() noexcept { // for estimating size of blocks to downloa
  const double size_min = 500; // XXX 500
  //const int history_len = 20; // how many blocks to average over
 
  double avg=0;
  try {
- avg = get_avg_block_weight(/*history_len*/);
+ avg = get_avg_block_size(/*history_len*/);
  } catch (...) { }
  avg = std::max( size_min , avg);
  return avg;

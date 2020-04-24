@@ -1182,7 +1182,7 @@ bool Blockchain::prevalidate_miner_transaction(const block& b, uint64_t height)
 }
 //------------------------------------------------------------------
 // This function validates the miner transaction reward
-bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_block_weight, uint64_t fee, uint64_t& base_reward, uint64_t already_generated_coins, bool &partial_block_reward, uint8_t version)
+bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_block_size, uint64_t fee, uint64_t& base_reward, uint64_t already_generated_coins, bool &partial_block_reward, uint8_t version)
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
   //validate reward
@@ -1200,7 +1200,7 @@ bool Blockchain::validate_miner_transaction(const block& b, size_t cumulative_bl
   get_last_n_blocks_sizes(last_blocks_sizes, CRYPTONOTE_REWARD_BLOCKS_WINDOW);
   if (!get_block_reward(epee::misc_utils::median(last_blocks_sizes), already_generated_coins, base_reward, version))
   {
-    MERROR_VER("block size " << cumulative_block_weight << " is bigger than allowed for this blockchain");
+    MERROR_VER("block size " << cumulative_block_size << " is bigger than allowed for this blockchain");
     return false;
   }
 
@@ -1231,7 +1231,7 @@ void Blockchain::get_last_n_blocks_sizes(std::vector<size_t>& sz, size_t count) 
   size_t start_offset = h - std::min<size_t>(h, count);
   for(size_t i = start_offset; i < h; i++)
   {
-    sz.push_back(m_db->get_block_weight(i));
+    sz.push_back(m_db->get_block_size(i));
   }
 }
 //------------------------------------------------------------------
@@ -3283,7 +3283,7 @@ leave:
   }
 
   size_t coinbase_blob_size = get_object_blobsize(bl.miner_tx);
-  size_t cumulative_block_weight = coinbase_blob_size;
+  size_t cumulative_block_size = coinbase_blob_size;
 
   std::vector<std::pair<transaction, blobdata>> txs;
   key_images_container keys;
@@ -3399,7 +3399,7 @@ leave:
     TIME_MEASURE_FINISH(cc);
     t_checktx += cc;
     fee_summary += fee;
-    cumulative_block_weight += blob_size;
+    cumulative_block_size += blob_size;
   }
 
   m_blocks_txs_check.clear();
@@ -3407,7 +3407,7 @@ leave:
   TIME_MEASURE_START(vmt);
   uint64_t base_reward = 0;
   uint64_t already_generated_coins = blockchain_height ? m_db->get_block_already_generated_coins(blockchain_height - 1) : 0;
-  if(!validate_miner_transaction(bl, cumulative_block_weight, fee_summary, base_reward, already_generated_coins, bvc.m_partial_block_reward, m_hardfork->get_current_version()))
+  if(!validate_miner_transaction(bl, cumulative_block_size, fee_summary, base_reward, already_generated_coins, bvc.m_partial_block_reward, m_hardfork->get_current_version()))
   {
     MERROR_VER("Block with id: " << id << " has incorrect miner transaction");
     bvc.m_verifivation_failed = true;
@@ -3418,7 +3418,7 @@ leave:
   TIME_MEASURE_FINISH(vmt);
 
   // populate various metadata about the block to be stored alongside it.
-  size_t block_weight = cumulative_block_weight;
+  size_t block_size = cumulative_block_size;
   difficulty_type cumulative_difficulty = current_diffic;
 
   // In the "tail" state when the minimum subsidy (implemented in get_block_reward) is in effect, the number of
@@ -3439,7 +3439,7 @@ leave:
     try
     {
       cryptonote::blobdata bd = cryptonote::block_to_blob(bl);
-      new_height = m_db->add_block(std::make_pair(std::move(bl), std::move(bd)), block_weight, cumulative_difficulty, already_generated_coins, txs);
+      new_height = m_db->add_block(std::make_pair(std::move(bl), std::move(bd)), block_size, cumulative_difficulty, already_generated_coins, txs);
     }
     catch (const KEY_IMAGE_EXISTS& e)
     {
@@ -3478,7 +3478,7 @@ leave:
   << "difficulty:\t" << current_diffic << std::endl 
   << "cumulative_difficulty:\t" << cumulative_difficulty << std::endl
   << "block reward:\t" << print_money(fee_summary + base_reward) << "(" << print_money(base_reward) << " + " << print_money(fee_summary) << ")" << std::endl
-  << "blob sizes:\t" << coinbase_blob_size << " (coinbase), " << cumulative_block_weight << " (cumulative)" << std::endl
+  << "blob sizes:\t" << coinbase_blob_size << " (coinbase), " << cumulative_block_size << " (cumulative)" << std::endl
   << "processing time:\t" << block_processing_time << "(" << target_calculating_time << "/" << longhash_calculating_time << ")ms");
   if(m_show_time_stats)
   {
@@ -3507,7 +3507,7 @@ void Blockchain::update_next_cumulative_size_limit()
 {
   LOG_PRINT_L3("Blockchain::" << __func__);
 
-  uint64_t full_reward_zone = get_min_block_weight(get_current_hard_fork_version());
+  uint64_t full_reward_zone = get_min_block_size(get_current_hard_fork_version());
 
   LOG_PRINT_L3("Blockchain::" << __func__);
   std::vector<size_t> sz;
