@@ -75,7 +75,7 @@ namespace cryptonote {
   //-----------------------------------------------------------------------------------------------
   size_t get_max_block_weight()
   {
-    return CRYPTONOTE_MAX_block_weight;
+    return CRYPTONOTE_MAX_BLOCK_WEIGHT;
   }
   //-----------------------------------------------------------------------------------------------
   size_t get_max_tx_size()
