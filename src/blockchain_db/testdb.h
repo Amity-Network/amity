@@ -151,7 +151,7 @@ public:
   virtual bool update_pruning() override { return true; }
   virtual bool check_pruning() override { return true; }
 
-  virtual uint64_t get_max_block_size() override { return 100000000; }
+  virtual uint64_t get_max_block_weight() override { return 100000000; }
 };
 
 }

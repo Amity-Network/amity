@@ -1448,7 +1448,7 @@ namespace cryptonote
 
     bvc = boost::value_initialized<block_verification_context>();
 
-    if (!check_incoming_block_size(block_blob))
+    if (!check_incoming_block_weight(block_blob))
     {
       bvc.m_verifivation_failed = true;
       return false;
@@ -1483,9 +1483,9 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   // Used by the RPC server to check the size of an incoming
   // block_blob
-  bool core::check_incoming_block_size(const blobdata& block_blob) const
+  bool core::check_incoming_block_weight(const blobdata& block_blob) const
   {
-    if(block_blob.size() > get_max_block_size())
+    if(block_blob.size() > get_max_block_weight())
     {
       LOG_PRINT_L1("WRONG BLOCK BLOB, too big size " << block_blob.size() << ", rejected");
       return false;

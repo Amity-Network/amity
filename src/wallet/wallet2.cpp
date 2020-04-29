@@ -6772,7 +6772,7 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
       THROW_WALLET_EXCEPTION_IF(!r, error::no_connection_to_daemon, "get_info");
       THROW_WALLET_EXCEPTION_IF(getinfo_res.status == CORE_RPC_STATUS_BUSY, error::daemon_busy, "get_info");
       THROW_WALLET_EXCEPTION_IF(getinfo_res.status != CORE_RPC_STATUS_OK, error::get_tx_pool_error);
-      const uint64_t full_reward_zone = getinfo_res.block_size_limit / 2;
+      const uint64_t full_reward_zone = getinfo_res.block_weight_limit / 2;
 
       // get the last N block headers and sum the block sizes
       const size_t N = 10;
@@ -6796,14 +6796,14 @@ uint32_t wallet2::adjust_priority(uint32_t priority)
         MERROR("Bad blockheaders size");
         return priority;
       }
-      size_t block_size_sum = 0;
+      size_t block_weight_sum = 0;
       for (const cryptonote::block_header_response &i : getbh_res.headers)
       {
-        block_size_sum += i.block_size;
+        block_weight_sum += i.block_weight;
       }
 
       // estimate how 'full' the last N blocks are
-      const size_t P = 100 * block_size_sum / (N * full_reward_zone);
+      const size_t P = 100 * block_weight_sum / (N * full_reward_zone);
       MINFO((boost::format("The last %d blocks fill roughly %d%% of the full reward zone.") % N % P).str());
       if (P > 80)
       {
@@ -12407,7 +12407,7 @@ std::vector<std::pair<uint64_t, uint64_t>> wallet2::estimate_backlog(const std::
   THROW_WALLET_EXCEPTION_IF(!r, error::no_connection_to_daemon, "get_info");
   THROW_WALLET_EXCEPTION_IF(resp_t.status == CORE_RPC_STATUS_BUSY, error::daemon_busy, "get_info");
   THROW_WALLET_EXCEPTION_IF(resp_t.status != CORE_RPC_STATUS_OK, error::get_tx_pool_error);
-  uint64_t full_reward_zone = resp_t.block_size_limit / 2;
+  uint64_t full_reward_zone = resp_t.block_weight_limit / 2;
 
   std::vector<std::pair<uint64_t, uint64_t>> blocks;
   for (const auto &fee_level: fee_levels)
